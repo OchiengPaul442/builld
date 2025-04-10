@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { motion, AnimatePresence, useInView } from 'framer-motion';
+import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { IoChevronForwardOutline, IoChevronBackOutline } from 'react-icons/io5';
 
 interface ProcessCardData {
@@ -51,8 +51,15 @@ export default function ProcessSteps() {
   const [windowWidth, setWindowWidth] = useState(
     typeof window !== 'undefined' ? window.innerWidth : 1200
   );
-  const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, { once: false, amount: 0.3 });
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const isInView = useMemo(() => {
+    if (!sectionRef.current) return false;
+    const rect = sectionRef.current.getBoundingClientRect();
+    return (
+      rect.top <= window.innerHeight * 0.7 &&
+      rect.bottom >= window.innerHeight * 0.3
+    );
+  }, [sectionRef.current, windowWidth]);
   const prevInViewRef = useRef(isInView);
 
   // Update window width on resize
@@ -95,11 +102,21 @@ export default function ProcessSteps() {
 
   const cardSizing = getCardSizing();
 
+  // Adjust card background opacity for mobile devices
+  const cardBackgroundColor =
+    windowWidth < 768 ? 'rgba(245, 245, 247, 0.2)' : 'rgba(245, 245, 247, 0.1)';
+  const cardBorder =
+    windowWidth < 768
+      ? '1.5px solid rgba(245, 245, 247, 0.6)'
+      : '1.5px solid rgba(245, 245, 247, 0.4)';
+  const cardBoxShadow =
+    windowWidth < 768
+      ? '0px 0px 20px 0px rgba(255, 255, 255, 0.6) inset'
+      : '0px 0px 20px 0px rgba(255, 255, 255, 0.4) inset';
+
   // Parse card height and calculate dynamic extra push & rotation.
   const cardHeightPx = parseInt(cardSizing.height, 10) || 400;
-  // Increase extra upward push to 25% of card height.
   const dynamicExtraPushY = -Math.ceil(cardHeightPx * 0.25);
-  // Increase extra rotation proportionally (around 2% of card height in degrees).
   const dynamicExtraRotate = -Math.ceil(cardHeightPx * 0.02);
 
   // Reset or advance based on viewport visibility
@@ -126,7 +143,7 @@ export default function ProcessSteps() {
     }
   }, [activeIndex]);
 
-  // Compute card style transformations without opacity changes.
+  // Compute card style transformations.
   const getCardStyles = (cardIndex: number) => {
     const { ACTIVE, BEHIND } = CARD_CONFIG;
     if (activeIndex === 0) {
@@ -174,7 +191,6 @@ export default function ProcessSteps() {
         };
     }
     if (activeIndex === 3) {
-      // When on the last card, push all cards upward further using dynamic extra push values.
       if (cardIndex === 0)
         return {
           ...secondLevel,
@@ -241,7 +257,6 @@ export default function ProcessSteps() {
                   zIndex: styles.zIndex,
                   transformOrigin: 'center center',
                 }}
-                // Remove initial opacity settings to prevent a fade effect.
                 animate={styles}
                 transition={{
                   type: 'spring',
@@ -254,11 +269,12 @@ export default function ProcessSteps() {
                   className="w-full h-full flex flex-col justify-center items-center text-center rounded-[40px]"
                   style={{
                     padding: cardSizing.padding,
-                    backgroundColor: 'rgba(245, 245, 247, 0.1)',
-                    border: '1.5px solid rgba(245, 245, 247, 0.4)',
+                    backgroundColor: cardBackgroundColor,
+                    border: cardBorder,
                     backdropFilter: 'blur(100px)',
-                    boxShadow:
-                      '0px 0px 20px 0px rgba(255, 255, 255, 0.4) inset',
+                    boxShadow: cardBoxShadow,
+                    transition:
+                      'background-color 0.3s ease, border 0.3s ease, box-shadow 0.3s ease',
                   }}
                 >
                   <h3 className="text-xl sm:text-2xl md:text-3xl font-normal mb-4 md:mb-6">
