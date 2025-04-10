@@ -16,42 +16,34 @@ const BackgroundAnimation = dynamic(
 const ANIMATION_DURATION = 0.4;
 const STAGGER_DELAY = 0.1;
 
-// Variant for individual items - simplified for performance
 const fadeUpVariant = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: ANIMATION_DURATION } },
 };
 
-// Parent container variant with delay for children
 const staggerContainer = {
   hidden: {},
   visible: { transition: { delayChildren: 0, staggerChildren: STAGGER_DELAY } },
 };
 
-// Use a custom hook with debounce for window resize
 const useWindowWidth = () => {
-  // Set initial width from window or fallback to a default value
   const [width, setWidth] = useState(
     typeof window !== "undefined" ? window.innerWidth : 1200
   );
 
-  // Use a ref to hold the timer ID for cleanup
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    // Create a debounced resize handler
     const handleResize = () => {
       if (timerRef.current) clearTimeout(timerRef.current);
 
       timerRef.current = setTimeout(() => {
         setWidth(window.innerWidth);
-      }, 100); // 100ms debounce
+      }, 100);
     };
 
-    // Add event listener
     window.addEventListener("resize", handleResize);
 
-    // Cleanup function
     return () => {
       window.removeEventListener("resize", handleResize);
       if (timerRef.current) clearTimeout(timerRef.current);
@@ -81,11 +73,9 @@ export default function HeroAndAboutSections({
     initialInView: false,
   });
 
-  // Use a ref to track previous state and prevent unnecessary updates
   const prevSectionRef = useRef<string | null>(null);
 
   useEffect(() => {
-    // Only update section if it's actually changed
     let newSection = null;
     if (heroInView) {
       newSection = "hero";
@@ -99,7 +89,6 @@ export default function HeroAndAboutSections({
     }
   }, [heroInView, aboutInView, setActiveSection]);
 
-  // Memoize size calculations to prevent unnecessary re-renders
   const logoSize = useMemo(() => {
     if (windowWidth < 640) return { width: 32, height: 32 };
     if (windowWidth < 768) return { width: 36, height: 36 };
@@ -146,7 +135,6 @@ export default function HeroAndAboutSections({
 
         <div className="max-w-7xl w-full px-4 sm:px-6 md:px-10 mx-auto relative z-10">
           <div className="flex flex-col items-center text-center">
-            {/* Only animate when startReveal is true */}
             <motion.div
               className="mb-6 sm:mb-8 md:mb-10"
               initial="hidden"
@@ -169,14 +157,14 @@ export default function HeroAndAboutSections({
                       },
                     }}
                     className="relative inline-flex"
-                    style={{ transform: "translateZ(0)" }} // Force GPU acceleration
+                    style={{ transform: "translateZ(0)" }}
                   >
                     <div
                       className="flex items-center w-12 h-12 md:w-20 md:h-20 justify-center rounded-2xl md:rounded-3xl"
                       style={{
                         backgroundColor: "rgba(255, 255, 255, 0.05)",
                         backdropFilter: "blur(66.67px)",
-                        transform: "translateZ(0)", // Force GPU acceleration
+                        transform: "translateZ(0)",
                       }}
                     >
                       <Image
@@ -228,7 +216,7 @@ export default function HeroAndAboutSections({
                 className="relative bg-transparent cursor-pointer border-2 border-[#b0ff00] rounded-full px-6 sm:px-7 md:px-9 py-2.5 sm:py-3 md:py-3.5 flex items-center group overflow-hidden hover:bg-[#b0ff00]/10 transition-colors duration-300"
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
-                style={{ transform: "translateZ(0)" }} // Force GPU acceleration
+                style={{ transform: "translateZ(0)" }}
               >
                 <span className="text-white text-base sm:text-lg font-light">
                   Let&apos;s build
@@ -259,7 +247,7 @@ export default function HeroAndAboutSections({
               }
               transition={{ duration: ANIMATION_DURATION }}
               className="md:col-span-4 flex justify-center md:justify-start"
-              style={{ transform: "translateZ(0)" }} // Force GPU acceleration
+              style={{ transform: "translateZ(0)" }}
             >
               <div
                 className={`${aboutLogoSize.containerSize} flex items-center justify-center ${aboutLogoSize.roundedSize} transform -rotate-45`}
@@ -267,7 +255,7 @@ export default function HeroAndAboutSections({
                   padding: "40px",
                   backgroundColor: "rgba(255, 255, 255, 0.05)",
                   backdropFilter: "blur(200px)",
-                  transform: "translateZ(0) rotate(-45deg)", // Force GPU acceleration with rotation
+                  transform: "translateZ(0) rotate(-45deg)",
                 }}
               >
                 <Image
@@ -276,7 +264,7 @@ export default function HeroAndAboutSections({
                   width={aboutLogoSize.logoSize.width}
                   height={aboutLogoSize.logoSize.height}
                   className="object-contain"
-                  quality={90} // Slightly lower quality for better performance
+                  quality={90}
                 />
               </div>
             </motion.div>

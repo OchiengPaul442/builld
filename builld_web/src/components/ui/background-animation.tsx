@@ -1,6 +1,6 @@
 "use client";
 
-import Lottie from "lottie-react";
+import Lottie, { LottieRefCurrentProps } from "lottie-react";
 import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import gradientBg from "@public/animations/gradient-background.json";
@@ -19,26 +19,31 @@ export default function BackgroundAnimation({
   opacity = 1,
 }: BackgroundAnimationProps) {
   const [mounted, setMounted] = useState(false);
-  const lottieRef = useRef<any>(null);
+  // Fix: Use LottieRefCurrentProps instead of Lottie
+  const lottieRef = useRef<LottieRefCurrentProps>(null);
 
   useEffect(() => {
     setMounted(true);
 
-    // Cleanup function
     return () => {
-      if (lottieRef.current) {
-        lottieRef.current.pause();
-        lottieRef.current.destroy();
+      // Store ref value in a variable to avoid React hooks exhaustive-deps warning
+      const currentRef = lottieRef.current;
+      if (currentRef) {
+        // Use type guards instead of direct method calls
+        if (typeof currentRef.pause === "function") {
+          currentRef.pause();
+        }
+        if (typeof currentRef.destroy === "function") {
+          currentRef.destroy();
+        }
       }
     };
   }, []);
 
-  // Return null while not mounted to avoid any pre-mount rendering issues
   if (!mounted) return null;
 
   return (
     <>
-      {/* Base Animation Layer */}
       <motion.div
         className="absolute inset-0 z-0 w-full h-full overflow-hidden"
         initial={{ opacity: 0 }}
@@ -66,7 +71,6 @@ export default function BackgroundAnimation({
         />
       </motion.div>
 
-      {/* Overlay for additional control of background intensity */}
       <div
         className="absolute inset-0 z-[1] w-full h-full"
         style={{
@@ -76,7 +80,6 @@ export default function BackgroundAnimation({
         }}
       ></div>
 
-      {/* Blur Overlay - only render when needed */}
       {withBlur && (
         <motion.div
           className="absolute inset-0 z-[2] w-full h-full"

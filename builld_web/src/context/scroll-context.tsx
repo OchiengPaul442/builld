@@ -28,19 +28,21 @@ type ScrollContextType = {
 
 const ScrollContext = createContext<ScrollContextType | undefined>(undefined);
 
-// Throttle function to limit execution frequency
-function throttle<T extends (...args: any[]) => any>(
+// Fix type for throttle function - make it generic but constrain to functions accepting any args
+function throttle<T extends (...args: any[]) => void>(
   func: T,
   delay: number
-): (...args: Parameters<T>) => void {
+): T {
   let lastCall = 0;
-  return (...args: Parameters<T>) => {
+
+  // Create a throttled function with the same signature as the original
+  return ((...args: Parameters<T>) => {
     const now = Date.now();
     if (now - lastCall >= delay) {
       lastCall = now;
       func(...args);
     }
-  };
+  }) as T;
 }
 
 export const ScrollProvider = ({ children }: { children: React.ReactNode }) => {
@@ -75,29 +77,41 @@ export const ScrollProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
-  // Use throttling for section detection to improve performance
+  // Use inline function for useCallback to fix the dependencies warning
   const updateActiveSection = useCallback(
-    throttle((section: SectionType) => {
+    (section: SectionType) => {
       if (section === activeSection || manualSectionUpdateRef.current) return;
       setActiveSection(section);
-    }, 100),
+    },
     [activeSection]
   );
 
-  // Throttled calculation of process card step
-  const updateProcessCardStep = useCallback(
-    throttle(() => {
-      if (activeSection === "process") {
-        const processSection = document.getElementById("section-process");
-        if (processSection) {
-          const { top, height } = processSection.getBoundingClientRect();
-          const progress = Math.max(0, Math.min(1, -top / height));
-          const newStep = Math.min(4, Math.floor(progress * 5));
-          setProcessCardStep(newStep);
-        }
+  // Throttled version of updateActiveSection with proper typing
+  const throttledUpdateActiveSection = useCallback(
+    throttle<(section: SectionType) => void>(
+      (section) => updateActiveSection(section),
+      100
+    ),
+    [updateActiveSection]
+  );
+
+  // Use inline function for useCallback to fix the dependencies warning
+  const updateProcessCardStep = useCallback(() => {
+    if (activeSection === "process") {
+      const processSection = document.getElementById("section-process");
+      if (processSection) {
+        const { top, height } = processSection.getBoundingClientRect();
+        const progress = Math.max(0, Math.min(1, -top / height));
+        const newStep = Math.min(4, Math.floor(progress * 5));
+        setProcessCardStep(newStep);
       }
-    }, 100),
-    [activeSection]
+    }
+  }, [activeSection]);
+
+  // Throttled version of updateProcessCardStep with proper typing
+  const throttledUpdateProcessCardStep = useCallback(
+    throttle<() => void>(() => updateProcessCardStep(), 100),
+    [updateProcessCardStep]
   );
 
   useEffect(() => {
@@ -129,7 +143,7 @@ export const ScrollProvider = ({ children }: { children: React.ReactNode }) => {
         let visibleArea = 0;
         if (visibleBottom > visibleTop) {
           visibleArea = visibleBottom - visibleTop;
-          // Apply weighting based on position (favor sections near the top)
+          // Apply weighting based on position
           const weightFactor = 1 + (1 - visibleTop / windowHeight) * 0.1;
           visibleArea *= weightFactor;
         }
@@ -146,18 +160,22 @@ export const ScrollProvider = ({ children }: { children: React.ReactNode }) => {
       }
 
       if (maxVisibleSection && maxVisibleSection !== activeSection) {
-        updateActiveSection(maxVisibleSection);
+        throttledUpdateActiveSection(maxVisibleSection);
       }
 
       // Update process card step if in process section
-      updateProcessCardStep();
+      throttledUpdateProcessCardStep();
     }, 100);
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [activeSection, updateActiveSection, updateProcessCardStep]);
+  }, [
+    activeSection,
+    throttledUpdateActiveSection,
+    throttledUpdateProcessCardStep,
+  ]);
 
   return (
     <ScrollContext.Provider

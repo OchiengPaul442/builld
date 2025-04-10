@@ -51,7 +51,7 @@ export default function ProcessSection() {
         className="relative section-fullscreen snap-section min-h-screen w-full flex items-center will-change-transform"
       >
         <BackgroundAnimation withBlur={true} />
-        <div className="max-w-7xl w-full mx-auto">
+        <div className="max-w-7xl w-full mx-auto z-[5] relative">
           <ProcessIntro />
         </div>
       </section>
@@ -61,7 +61,7 @@ export default function ProcessSection() {
         className="relative z-10 section-fullscreen snap-section min-h-screen w-full flex items-center justify-center will-change-transform"
       >
         <BackgroundAnimation withBlur={true} />
-        <div className="max-w-7xl w-full mx-auto">
+        <div className="max-w-7xl w-full mx-auto z-[5] relative">
           <ProcessSteps />
         </div>
       </section>
