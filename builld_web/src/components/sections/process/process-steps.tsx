@@ -54,7 +54,7 @@ export default function ProcessSteps() {
   );
   const sectionRef = useRef<HTMLDivElement>(null);
 
-  // Check if the section is in view
+  // Compute in-view status based on windowWidth dependency only.
   const isInView = useMemo(() => {
     if (!sectionRef.current) return false;
     const rect = sectionRef.current.getBoundingClientRect();
@@ -62,7 +62,7 @@ export default function ProcessSteps() {
       rect.top <= window.innerHeight * 0.7 &&
       rect.bottom >= window.innerHeight * 0.3
     );
-  }, [sectionRef.current, windowWidth]);
+  }, [windowWidth]);
 
   // Update window width on resize
   useEffect(() => {
@@ -104,7 +104,7 @@ export default function ProcessSteps() {
 
   const cardSizing = getCardSizing();
 
-  // Adjust card background opacity for mobile devices
+  // Adjust card styling for mobile devices
   const cardBackgroundColor =
     windowWidth < 768 ? 'rgba(245, 245, 247, 0.2)' : 'rgba(245, 245, 247, 0.1)';
   const cardBorder =
@@ -116,22 +116,14 @@ export default function ProcessSteps() {
       ? '0px 0px 20px 0px rgba(255, 255, 255, 0.6) inset'
       : '0px 0px 20px 0px rgba(255, 255, 255, 0.4) inset';
 
-  // Parse card height and calculate dynamic extra push & rotation.
   const cardHeightPx = parseInt(cardSizing.height, 10) || 400;
   const dynamicExtraPushY = -Math.ceil(cardHeightPx * 0.25);
   const dynamicExtraRotate = -Math.ceil(cardHeightPx * 0.02);
 
-  // When the section becomes visible or hidden, reset to the initial state smoothly.
+  // Reset state smoothly whenever the section enters or leaves view.
   useEffect(() => {
-    if (isInView) {
-      // Smoothly reset to card one when entering the section
-      setActiveIndex(1);
-      setShowFinalMessage(false);
-    } else {
-      // Also reset state when leaving the section
-      setActiveIndex(1);
-      setShowFinalMessage(false);
-    }
+    setActiveIndex(1);
+    setShowFinalMessage(false);
   }, [isInView]);
 
   useEffect(() => {
@@ -147,7 +139,6 @@ export default function ProcessSteps() {
   const getCardStyles = (cardIndex: number) => {
     const { ACTIVE, BEHIND } = CARD_CONFIG;
     if (activeIndex === 1) {
-      // Initial state: Show card one (activeIndex = 1)
       if (cardIndex === 0) return { ...ACTIVE, opacity: 1 };
       if (cardIndex === 1)
         return {
@@ -204,7 +195,6 @@ export default function ProcessSteps() {
           opacity: 1,
         };
     }
-    // Default fallback
     return { x: 0, y: 0, rotate: 0, opacity: 1, zIndex: 0, scale: 1 };
   };
 

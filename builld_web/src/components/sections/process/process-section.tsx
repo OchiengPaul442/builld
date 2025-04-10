@@ -5,10 +5,7 @@ import { useEffect, useRef } from 'react';
 import { useScroll, SectionType } from '@/context/scroll-context';
 import ProcessIntro from './process-intro';
 import ProcessSteps from './process-steps';
-import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
-
-
 
 export default function ProcessSection() {
   const { setActiveSection } = useScroll();
@@ -54,7 +51,7 @@ export default function ProcessSection() {
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
           style={{
-            backdropFilter: 'blur(100px)]',
+            backdropFilter: 'blur(100px)',
             backgroundColor: 'rgba(255, 255, 255, 0.1)',
             willChange: 'opacity',
             transform: 'translateZ(0)',
@@ -75,7 +72,7 @@ export default function ProcessSection() {
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
           style={{
-            backdropFilter: 'blur(100px)]',
+            backdropFilter: 'blur(100px)',
             backgroundColor: 'rgba(255, 255, 255, 0.1)',
             willChange: 'opacity',
             transform: 'translateZ(0)',
