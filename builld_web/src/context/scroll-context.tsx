@@ -28,16 +28,25 @@ type ScrollContextType = {
 
 const ScrollContext = createContext<ScrollContextType | undefined>(undefined);
 
-// Simple throttle function without any type
-function throttle(func: Function, delay: number) {
+// Proper type definition for the throttle function
+type ThrottledFunction<T extends (...args: any[]) => any> = (
+  ...args: Parameters<T>
+) => ReturnType<T> | undefined;
+
+// Fixed throttle function with proper type definitions
+function throttle<T extends (...args: any[]) => any>(
+  func: T,
+  delay: number
+): ThrottledFunction<T> {
   let lastCall = 0;
 
-  return function (...args: unknown[]) {
+  return (...args: Parameters<T>) => {
     const now = Date.now();
     if (now - lastCall >= delay) {
       lastCall = now;
-      func(...args);
+      return func(...args);
     }
+    return undefined;
   };
 }
 
@@ -46,7 +55,7 @@ export const ScrollProvider = ({ children }: { children: React.ReactNode }) => {
   const [processCardStep, setProcessCardStep] = useState(0);
   const isScrolling = useRef(false);
   const manualSectionUpdateRef = useRef(false);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     return () => {
@@ -147,12 +156,14 @@ export const ScrollProvider = ({ children }: { children: React.ReactNode }) => {
       throttledUpdateProcessCardStep();
     };
 
-    // Apply throttling (simpler version to avoid type issues)
+    // Apply throttling with proper types
     const throttledHandleScroll = throttle(handleScroll, 100);
 
-    window.addEventListener("scroll", throttledHandleScroll, { passive: true });
+    window.addEventListener("scroll", () => throttledHandleScroll(), {
+      passive: true,
+    });
     return () => {
-      window.removeEventListener("scroll", throttledHandleScroll);
+      window.removeEventListener("scroll", () => throttledHandleScroll());
     };
   }, [
     activeSection,
