@@ -17,6 +17,13 @@
   --font-sans: "Lexend", sans-serif;
 }
 
+/* Force dark mode for all devices */
+:root {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+}
+
+/* This keeps the media query for devices that support it */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
@@ -24,10 +31,73 @@
   }
 }
 
+@media (prefers-color-scheme: light) {
+  :root {
+    --background: #ffffff;
+    --foreground: #171717;
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  -webkit-text-fill-color: var(--foreground); /* For WebKit browsers */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ensure text contrast with background */
+.bg-white *,
+.bg-gray-100 *,
+.bg-gray-200 *,
+.bg-gray-300 *,
+[class*="bg-white"] *,
+[class*="bg-gray-100"] *,
+[class*="bg-gray-200"] *,
+[class*="bg-gray-300"] * {
+  color: #171717;
+  -webkit-text-fill-color: #171717;
+}
+
+.bg-black *,
+.bg-gray-800 *,
+.bg-gray-900 *,
+[class*="bg-black"] *,
+[class*="bg-gray-800"] *,
+[class*="bg-gray-900"] * {
+  color: #ededed;
+  -webkit-text-fill-color: #ededed;
+}
+
+/* Fix for mobile browsers */
+@media (max-width: 767px) {
+  body,
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  span,
+  div {
+    color: #ededed !important;
+    -webkit-text-fill-color: #ededed !important;
+  }
+
+  /* Override for light backgrounds */
+  .bg-white *,
+  .bg-gray-100 *,
+  .bg-gray-200 *,
+  .bg-gray-300 *,
+  [class*="bg-white"] *,
+  [class*="bg-gray-100"] *,
+  [class*="bg-gray-200"] *,
+  [class*="bg-gray-300"] * {
+    color: #171717 !important;
+    -webkit-text-fill-color: #171717 !important;
+  }
 }
 
 /* Additional styles for the coming soon page */
@@ -103,4 +173,43 @@ html {
 
 .scroll-lock {
   overscroll-behavior: none;
+}
+
+/* Fix for specific text elements on mobile */
+@media (max-width: 767px) {
+  .text-white,
+  [class*="text-white"],
+  [class*="text-gray-"],
+  .section-fullscreen * {
+    color: #ededed !important;
+    -webkit-text-fill-color: #ededed !important;
+  }
+
+  /* Exception for accent colors */
+  .text-accent-green,
+  .text-\[#b0ff00\],
+  [class*="text-accent-green"],
+  [class*="text-\[#b0ff00\]"] {
+    color: var(--accent-green) !important;
+    -webkit-text-fill-color: var(--accent-green) !important;
+  }
+
+  .text-accent-blue,
+  [class*="text-accent-blue"] {
+    color: var(--accent-blue) !important;
+    -webkit-text-fill-color: var(--accent-blue) !important;
+  }
+
+  /* Make sure text in white backgrounds stays black */
+  .bg-white *,
+  .bg-gray-100 *,
+  .bg-gray-200 *,
+  .bg-gray-300 *,
+  [class*="bg-white"] *,
+  [class*="bg-gray-100"] *,
+  [class*="bg-gray-200"] *,
+  [class*="bg-gray-300"] * {
+    color: #171717 !important;
+    -webkit-text-fill-color: #171717 !important;
+  }
 }

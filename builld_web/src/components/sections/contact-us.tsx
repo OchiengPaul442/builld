@@ -89,7 +89,7 @@ export default function ContactUs() {
     <section
       id="section-contact"
       ref={ref}
-      className="section-fullscreen snap-section flex items-center justify-center py-10 sm:py-12 md:py-16 px-4 sm:px-6 md:px-8"
+      className="section-fullscreen snap-section bg-black flex items-center justify-center py-10 sm:py-12 md:py-16 px-4 sm:px-6 md:px-8"
     >
       <div className="relative z-10 max-w-7xl w-full mx-auto flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12">
         {/* Left content */}
@@ -316,9 +316,9 @@ export default function ContactUs() {
               {/* Submit Button */}
               <motion.button
                 type="submit"
-                className="w-full py-3 sm:py-4 bg-[#b0ff00] text-black 
+                className="w-full py-3 sm:py-4 bg-[#9de600c4] 
                            rounded-lg text-base sm:text-lg font-medium 
-                           hover:bg-[#9ee600] transition-colors"
+                           hover:scale-95 transition-all duration-200"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
