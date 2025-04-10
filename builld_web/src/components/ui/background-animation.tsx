@@ -24,18 +24,20 @@ export default function BackgroundAnimation({
   useEffect(() => {
     setMounted(true);
 
-    // Fix: Store the ref value at the time the cleanup function is created
-    const currentLottieRef = lottieRef.current;
+    // Capture the current ref value for use in the cleanup function
+    const currentRef = lottieRef.current;
 
-    // Cleanup function properly using the captured reference
     return () => {
-      if (currentLottieRef) {
-        // Use optional chaining for safer method access
-        currentLottieRef.pause?.();
-        currentLottieRef.destroy?.();
+      // Use the captured ref value in the cleanup
+      if (currentRef) {
+        if (typeof currentRef.pause === "function") {
+          currentRef.pause();
+        }
+        if (typeof currentRef.destroy === "function") {
+          currentRef.destroy();
+        }
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!mounted) return null;

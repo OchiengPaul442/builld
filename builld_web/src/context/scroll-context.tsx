@@ -28,14 +28,11 @@ type ScrollContextType = {
 
 const ScrollContext = createContext<ScrollContextType | undefined>(undefined);
 
-// Fixed throttle function with explicit type parameter instead of using 'any'
-function throttle<T extends (...args: unknown[]) => void>(
-  func: T,
-  delay: number
-): (...args: Parameters<T>) => void {
+// Simple throttle function without any type
+function throttle(func: Function, delay: number) {
   let lastCall = 0;
 
-  return (...args: Parameters<T>) => {
+  return function (...args: unknown[]) {
     const now = Date.now();
     if (now - lastCall >= delay) {
       lastCall = now;
@@ -76,8 +73,8 @@ export const ScrollProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
-  // Direct implementation without intermediate throttled functions
-  const updateActiveSection = useCallback(
+  // Simplified throttled functions
+  const throttledUpdateActiveSection = useCallback(
     (section: SectionType) => {
       if (section === activeSection || manualSectionUpdateRef.current) return;
       setActiveSection(section);
@@ -85,16 +82,7 @@ export const ScrollProvider = ({ children }: { children: React.ReactNode }) => {
     [activeSection]
   );
 
-  // Fix the useCallback dependencies warning by using proper inline functions
-  const throttledUpdateActiveSection = useCallback(
-    (section: SectionType) => {
-      if (section === activeSection || manualSectionUpdateRef.current) return;
-      setActiveSection(section);
-    },
-    [activeSection, manualSectionUpdateRef]
-  );
-
-  const updateProcessCardStep = useCallback(() => {
+  const throttledUpdateProcessCardStep = useCallback(() => {
     if (activeSection === "process") {
       const processSection = document.getElementById("section-process");
       if (processSection) {
@@ -105,10 +93,6 @@ export const ScrollProvider = ({ children }: { children: React.ReactNode }) => {
       }
     }
   }, [activeSection]);
-
-  const throttledUpdateProcessCardStep = useCallback(() => {
-    updateProcessCardStep();
-  }, [updateProcessCardStep]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -163,7 +147,7 @@ export const ScrollProvider = ({ children }: { children: React.ReactNode }) => {
       throttledUpdateProcessCardStep();
     };
 
-    // Apply the throttling
+    // Apply throttling (simpler version to avoid type issues)
     const throttledHandleScroll = throttle(handleScroll, 100);
 
     window.addEventListener("scroll", throttledHandleScroll, { passive: true });
