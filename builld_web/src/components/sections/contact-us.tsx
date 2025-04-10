@@ -4,6 +4,38 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { useScroll } from "@/context/scroll-context";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as Yup from "yup";
+
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+import { parsePhoneNumberFromString } from "libphonenumber-js";
+
+// Define validation schema using Yup
+const validationSchema = Yup.object().shape({
+  email: Yup.string()
+    .email("Invalid email format")
+    .required("Email is required"),
+  phoneNumber: Yup.string()
+    .required("Phone number is required")
+    .test(
+      "is-valid-phone",
+      "Please enter a valid phone number",
+      function (value) {
+        if (!value) return false;
+        // Ensure the phone number has a leading plus
+        let phoneStr = value.trim();
+        if (!phoneStr.startsWith("+")) {
+          phoneStr = "+" + phoneStr;
+        }
+        const phone = parsePhoneNumberFromString(phoneStr);
+        return phone ? phone.isValid() : false;
+      }
+    ),
+  businessStage: Yup.string().required("Please select a business stage"),
+  challenge: Yup.string().required("Please describe your biggest challenge"),
+});
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -15,15 +47,20 @@ const fadeIn = {
 };
 
 export default function ContactUs() {
-  const [formData, setFormData] = useState({
-    email: "",
-    phoneNumber: "",
-    businessStage: "",
-    challenge: "",
-  });
   const { setActiveSection } = useScroll();
   const [ref, inView] = useInView({ threshold: 0.3 });
   const [formSubmitted, setFormSubmitted] = useState(false);
+
+  // Use react-hook-form with Yup validation
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+    reset,
+  } = useForm({
+    resolver: yupResolver(validationSchema),
+  });
 
   useEffect(() => {
     if (inView) {
@@ -32,25 +69,11 @@ export default function ContactUs() {
     }
   }, [inView, setActiveSection]);
 
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = (data: any) => {
+    // Simulate async request
     setTimeout(() => {
       setFormSubmitted(true);
-      setFormData({
-        email: "",
-        phoneNumber: "",
-        businessStage: "",
-        challenge: "",
-      });
+      reset();
     }, 500);
   };
 
@@ -61,6 +84,7 @@ export default function ContactUs() {
       className="section-fullscreen snap-section flex items-center justify-center py-10 sm:py-12 md:py-16 px-4 sm:px-6 md:px-8"
     >
       <div className="relative z-10 max-w-7xl w-full mx-auto flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12">
+        {/* Left content */}
         <div className="w-full max-w-2xl text-white">
           <motion.h2
             className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6"
@@ -100,13 +124,15 @@ export default function ContactUs() {
             </div>
           </motion.div>
         </div>
+
+        {/* Right content (form) */}
         <motion.form
+          onSubmit={handleSubmit(onSubmit)}
           className="w-full max-w-xl bg-zinc-800/50 backdrop-blur-lg p-6 sm:p-7 md:p-8 rounded-xl sm:rounded-2xl"
           initial="hidden"
           animate={inView ? "visible" : "hidden"}
           variants={fadeIn}
           custom={0.3}
-          onSubmit={handleSubmit}
         >
           {formSubmitted ? (
             <motion.div
@@ -147,6 +173,7 @@ export default function ContactUs() {
           ) : (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 md:gap-6 mb-6">
+                {/* Email Field */}
                 <div>
                   <label
                     htmlFor="email"
@@ -157,14 +184,20 @@ export default function ContactUs() {
                   <input
                     type="email"
                     id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-zinc-700/50 border border-zinc-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#b0ff00]"
+                    {...register("email")}
                     placeholder="your@email.com"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-zinc-700/50 
+                               border border-zinc-600 rounded-lg text-white 
+                               focus:outline-none focus:ring-2 focus:ring-[#b0ff00]"
                   />
+                  {errors.email && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.email.message}
+                    </p>
+                  )}
                 </div>
+
+                {/* Phone Field */}
                 <div>
                   <label
                     htmlFor="phoneNumber"
@@ -172,16 +205,54 @@ export default function ContactUs() {
                   >
                     Phone Number
                   </label>
-                  <input
-                    type="tel"
-                    id="phoneNumber"
-                    name="phoneNumber"
-                    value={formData.phoneNumber}
-                    onChange={handleChange}
-                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-zinc-700/50 border border-zinc-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#b0ff00]"
-                    placeholder="123-456-7890"
+                  <PhoneInput
+                    country="us"
+                    enableSearch={true}
+                    value=""
+                    onChange={(value: string) =>
+                      setValue("phoneNumber", value, { shouldValidate: true })
+                    }
+                    containerStyle={{
+                      width: "100%",
+                    }}
+                    inputStyle={{
+                      width: "100%",
+                      height: "51px",
+                      background: "#3f3f46",
+                      color: "white",
+                      border: "gray",
+                      borderRadius: "0.5rem",
+                      paddingLeft: "3rem",
+                      outline: "none",
+                      fontSize: "0.875rem",
+                    }}
+                    buttonStyle={{
+                      background: "#3f3f46",
+                      color: "white",
+                      border: "1px solid rgba(107, 114, 128, 1)",
+                      borderRadius: "0.5rem 0 0 0.5rem",
+                      outline: "none",
+                    }}
+                    dropdownStyle={{
+                      background: "white/10",
+                      color: "black",
+                      border: "gray",
+                      zIndex: 9999,
+                    }}
+                    searchStyle={{
+                      background: "rgba(55, 65, 81, 0.5)",
+                      color: "white",
+                      borderRadius: "0.25rem",
+                    }}
                   />
+                  {errors.phoneNumber && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.phoneNumber.message}
+                    </p>
+                  )}
                 </div>
+
+                {/* Business Stage Field */}
                 <div className="md:col-span-2">
                   <label
                     htmlFor="businessStage"
@@ -191,17 +262,25 @@ export default function ContactUs() {
                   </label>
                   <select
                     id="businessStage"
-                    name="businessStage"
-                    value={formData.businessStage}
-                    onChange={handleChange}
-                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-zinc-700/50 border border-zinc-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#b0ff00]"
+                    {...register("businessStage")}
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 
+                               bg-zinc-700/50 border border-zinc-600 
+                               rounded-lg text-white 
+                               focus:outline-none focus:ring-2 focus:ring-[#b0ff00]"
                   >
                     <option value="">Choose a Plan</option>
                     <option value="LaunchPad">LaunchPad</option>
                     <option value="Ignite">Ignite</option>
                   </select>
+                  {errors.businessStage && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.businessStage.message}
+                    </p>
+                  )}
                 </div>
               </div>
+
+              {/* Challenge Field */}
               <div className="mb-6">
                 <label
                   htmlFor="challenge"
@@ -211,17 +290,27 @@ export default function ContactUs() {
                 </label>
                 <textarea
                   id="challenge"
-                  name="challenge"
-                  value={formData.challenge}
-                  onChange={handleChange}
+                  {...register("challenge")}
                   rows={4}
-                  className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-zinc-700/50 border border-zinc-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#b0ff00] resize-none"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-zinc-700/50 
+                             border border-zinc-600 rounded-lg text-white 
+                             focus:outline-none focus:ring-2 focus:ring-[#b0ff00] 
+                             resize-none"
                   placeholder="What's your biggest challenge right now?"
                 />
+                {errors.challenge && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.challenge.message}
+                  </p>
+                )}
               </div>
+
+              {/* Submit Button */}
               <motion.button
                 type="submit"
-                className="w-full py-3 sm:py-4 bg-[#b0ff00] text-black rounded-lg text-base sm:text-lg font-medium hover:bg-[#9ee600] transition-colors"
+                className="w-full py-3 sm:py-4 bg-[#b0ff00] text-black 
+                           rounded-lg text-base sm:text-lg font-medium 
+                           hover:bg-[#9ee600] transition-colors"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
