@@ -261,6 +261,7 @@ export default function ContactUs() {
                   <input
                     type="email"
                     id="email"
+                    style={{ height: '50px' }}
                     {...register('email')}
                     placeholder="your@email.com"
                     className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-zinc-700/50 
@@ -294,7 +295,7 @@ export default function ContactUs() {
                     }}
                     inputStyle={{
                       width: '100%',
-                      height: '51px',
+                      height: '50px',
                       background: '#3f3f46',
                       color: 'white',
                       border: 'gray',
@@ -339,6 +340,7 @@ export default function ContactUs() {
                   </label>
                   <select
                     id="businessStage"
+                    style={{ height: '50px' }}
                     {...register('businessStage')}
                     className="w-full px-3 sm:px-4 py-2 sm:py-3 
                                bg-zinc-700/50 border border-zinc-600 
