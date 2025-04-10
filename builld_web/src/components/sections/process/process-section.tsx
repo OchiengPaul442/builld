@@ -6,11 +6,9 @@ import { useScroll, SectionType } from '@/context/scroll-context';
 import ProcessIntro from './process-intro';
 import ProcessSteps from './process-steps';
 import dynamic from 'next/dynamic';
+import { motion } from 'framer-motion';
 
-const BackgroundAnimation = dynamic(
-  () => import('../../ui/background-animation'),
-  { ssr: false }
-);
+
 
 export default function ProcessSection() {
   const { setActiveSection } = useScroll();
@@ -48,9 +46,20 @@ export default function ProcessSection() {
       <section
         ref={mainSectionRef}
         id="section-process"
-        className="relative section-fullscreen snap-section min-h-screen w-full flex items-center will-change-transform"
+        className="relative section-fullscreen z-30 snap-section min-h-screen w-full flex items-center will-change-transform"
       >
-        <BackgroundAnimation withBlur={true} />
+        <motion.div
+          className="absolute inset-0 z-[2] w-full h-full"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+          style={{
+            backdropFilter: 'blur(100px)]',
+            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+            willChange: 'opacity',
+            transform: 'translateZ(0)',
+          }}
+        />
         <div className="max-w-7xl w-full mx-auto z-[5] relative">
           <ProcessIntro />
         </div>
@@ -58,9 +67,20 @@ export default function ProcessSection() {
       <section
         ref={stepsRef}
         id="section-process-steps"
-        className="relative z-10 section-fullscreen snap-section min-h-screen w-full flex items-center justify-center will-change-transform"
+        className="relative z-30 section-fullscreen snap-section min-h-screen w-full flex items-center justify-center will-change-transform"
       >
-        <BackgroundAnimation withBlur={true} />
+        <motion.div
+          className="absolute inset-0 z-[2] w-full h-full"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+          style={{
+            backdropFilter: 'blur(100px)]',
+            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+            willChange: 'opacity',
+            transform: 'translateZ(0)',
+          }}
+        />
         <div className="max-w-7xl w-full mx-auto z-[5] relative">
           <ProcessSteps />
         </div>

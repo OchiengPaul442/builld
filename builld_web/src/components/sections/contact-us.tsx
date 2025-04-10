@@ -1,4 +1,3 @@
-// src/components/sections/contact-us.tsx
 'use client';
 
 import { useEffect, useRef } from 'react';
@@ -157,7 +156,7 @@ export default function ContactUs() {
     <section
       id="section-contact"
       ref={ref}
-      className="section-fullscreen snap-section bg-black flex items-center justify-center py-10 sm:py-12 md:py-16 px-4 sm:px-6 md:px-8 will-change-transform"
+      className="section-fullscreen snap-section z-30 bg-black flex items-center justify-center py-10 sm:py-12 md:py-16 px-4 sm:px-6 md:px-8 will-change-transform"
     >
       <div className="relative z-10 max-w-7xl w-full mx-auto flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12">
         {/* Left content */}

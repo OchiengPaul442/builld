@@ -46,12 +46,15 @@ const CARD_CONFIG = {
 };
 
 export default function ProcessSteps() {
-  const [activeIndex, setActiveIndex] = useState(0);
+  // The initial state will be card one (activeIndex = 1)
+  const [activeIndex, setActiveIndex] = useState(1);
   const [showFinalMessage, setShowFinalMessage] = useState(false);
   const [windowWidth, setWindowWidth] = useState(
     typeof window !== 'undefined' ? window.innerWidth : 1200
   );
   const sectionRef = useRef<HTMLDivElement>(null);
+
+  // Check if the section is in view
   const isInView = useMemo(() => {
     if (!sectionRef.current) return false;
     const rect = sectionRef.current.getBoundingClientRect();
@@ -60,7 +63,6 @@ export default function ProcessSteps() {
       rect.bottom >= window.innerHeight * 0.3
     );
   }, [sectionRef.current, windowWidth]);
-  const prevInViewRef = useRef(isInView);
 
   // Update window width on resize
   useEffect(() => {
@@ -119,19 +121,17 @@ export default function ProcessSteps() {
   const dynamicExtraPushY = -Math.ceil(cardHeightPx * 0.25);
   const dynamicExtraRotate = -Math.ceil(cardHeightPx * 0.02);
 
-  // Reset or advance based on viewport visibility
+  // When the section becomes visible or hidden, reset to the initial state smoothly.
   useEffect(() => {
-    if (isInView && !prevInViewRef.current) {
-      setActiveIndex(0);
+    if (isInView) {
+      // Smoothly reset to card one when entering the section
+      setActiveIndex(1);
       setShowFinalMessage(false);
-      const timer = setTimeout(() => setActiveIndex(1), 400);
-      return () => clearTimeout(timer);
-    }
-    if (!isInView && prevInViewRef.current) {
-      setActiveIndex(0);
+    } else {
+      // Also reset state when leaving the section
+      setActiveIndex(1);
       setShowFinalMessage(false);
     }
-    prevInViewRef.current = isInView;
   }, [isInView]);
 
   useEffect(() => {
@@ -146,17 +146,8 @@ export default function ProcessSteps() {
   // Compute card style transformations.
   const getCardStyles = (cardIndex: number) => {
     const { ACTIVE, BEHIND } = CARD_CONFIG;
-    if (activeIndex === 0) {
-      return {
-        y: 0,
-        x: 0,
-        rotate: cardIndex * -8,
-        zIndex: 30 - cardIndex * 10,
-        scale: 1,
-        opacity: 1,
-      };
-    }
     if (activeIndex === 1) {
+      // Initial state: Show card one (activeIndex = 1)
       if (cardIndex === 0) return { ...ACTIVE, opacity: 1 };
       if (cardIndex === 1)
         return {
@@ -213,6 +204,7 @@ export default function ProcessSteps() {
           opacity: 1,
         };
     }
+    // Default fallback
     return { x: 0, y: 0, rotate: 0, opacity: 1, zIndex: 0, scale: 1 };
   };
 

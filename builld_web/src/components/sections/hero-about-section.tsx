@@ -130,10 +130,9 @@ export default function HeroAndAboutSections({
       <section
         id="section-hero"
         ref={heroRef}
-        className="section-fullscreen snap-section gradient-bg flex items-center justify-center relative"
+        className="section-fullscreen z-10 snap-section gradient-bg flex items-center justify-center relative"
       >
         <BackgroundAnimation />
-
         <div className="max-w-7xl w-full px-4 sm:px-6 md:px-10 mx-auto relative z-10">
           <div className="flex flex-col items-center text-center">
             <motion.div
@@ -234,9 +233,20 @@ export default function HeroAndAboutSections({
       <section
         id="section-about"
         ref={aboutRef}
-        className="relative section-fullscreen snap-section min-h-screen w-full overflow-hidden"
+        className="relative section-fullscreen z-30 snap-section min-h-screen w-full overflow-hidden"
       >
-        <BackgroundAnimation withBlur={true} />
+        <motion.div
+          className="absolute inset-0 z-[2] w-full h-full"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+          style={{
+            backdropFilter: 'blur(100px)]',
+            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+            willChange: 'opacity',
+            transform: 'translateZ(0)',
+          }}
+        />
         <div className="max-w-7xl w-full px-4 sm:px-6 md:px-0 mx-auto relative z-10 py-10 sm:py-16 md:py-20">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 md:gap-12 lg:gap-16 items-center">
             <motion.div

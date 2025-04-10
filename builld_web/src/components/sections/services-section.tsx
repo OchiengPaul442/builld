@@ -4,12 +4,6 @@ import { motion } from 'framer-motion';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useScroll } from '@/context/scroll-context';
 import { useInView } from 'react-intersection-observer';
-import dynamic from 'next/dynamic';
-
-const BackgroundAnimation = dynamic(
-  () => import('../ui/background-animation'),
-  { ssr: false }
-);
 
 type PlanPeriod = 'monthly' | 'quarterly' | 'yearly';
 
@@ -136,9 +130,20 @@ export default function ServicesSection() {
     <section
       id="section-services"
       ref={ref}
-      className="section-fullscreen snap-section bg-gradient-to-br from-purple-800 to-purple-900 flex flex-col items-center justify-center py-12 px-4 md:px-6 overflow-y-auto will-change-transform"
+      className="section-fullscreen snap-section z-30 flex flex-col items-center justify-center py-12 px-4 md:px-6 overflow-y-auto will-change-transform"
     >
-      <BackgroundAnimation withBlur />
+      <motion.div
+        className="absolute inset-0 z-[2] w-full h-full"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+        style={{
+          backdropFilter: 'blur(100px)]',
+          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+          willChange: 'opacity',
+          transform: 'translateZ(0)',
+        }}
+      />
       <div className="relative z-10 text-center mb-6 md:mb-8 max-w-7xl w-full mx-auto">
         <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-2">
           Plans & Pricing

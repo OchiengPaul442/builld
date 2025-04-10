@@ -11,6 +11,11 @@ import ServicesSection from '@/components/sections/services-section';
 import ContactUs from '@/components/sections/contact-us';
 import dynamic from 'next/dynamic';
 
+const BackgroundAnimation = dynamic(
+  () => import('../components/ui/background-animation'),
+  { ssr: false }
+);
+
 // Fixed throttle function - removed 'any' type
 function throttle<T extends (...args: unknown[]) => void>(
   func: T,
@@ -93,6 +98,8 @@ function HomeContent() {
         <ServicesSection />
         <ContactUs />
       </div>
+
+      <BackgroundAnimation />
     </div>
   );
 }

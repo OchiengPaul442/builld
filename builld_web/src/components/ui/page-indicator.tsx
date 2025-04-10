@@ -56,7 +56,7 @@ export default function PageIndicator() {
 
   return (
     <motion.div
-      className="fixed right-4 lg:right-20 top-1/2 -translate-y-1/2 z-50 flex-col space-y-4 lg:space-y-6 hidden md:flex"
+      className="fixed right-4 lg:right-16 top-1/2 -translate-y-1/2 z-50 flex-col space-y-4 lg:space-y-6 hidden md:flex"
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.5, delay: 0.3 }}
