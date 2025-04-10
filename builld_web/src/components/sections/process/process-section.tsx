@@ -25,13 +25,11 @@ export default function ProcessSection() {
 
   useEffect(() => {
     let currentSection: SectionType | null = null;
-
     if (mainSectionInView) {
       currentSection = 'process';
     } else if (stepsInView) {
       currentSection = 'process-steps';
     }
-
     if (currentSection && currentSection !== prevSectionRef.current) {
       setActiveSection(currentSection);
       prevSectionRef.current = currentSection;

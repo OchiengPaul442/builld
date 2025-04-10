@@ -46,7 +46,7 @@ const CARD_CONFIG = {
 };
 
 export default function ProcessSteps() {
-  // The initial state will be card one (activeIndex = 1)
+  // The activeIndex represents the current card (1 = card at index 0, 2 = index 1, etc.)
   const [activeIndex, setActiveIndex] = useState(1);
   const [showFinalMessage, setShowFinalMessage] = useState(false);
   const [windowWidth, setWindowWidth] = useState(
@@ -54,7 +54,7 @@ export default function ProcessSteps() {
   );
   const sectionRef = useRef<HTMLDivElement>(null);
 
-  // Compute in-view status based on windowWidth dependency only.
+  // Compute in-view status (depends on window width)
   const isInView = useMemo(() => {
     if (!sectionRef.current) return false;
     const rect = sectionRef.current.getBoundingClientRect();
@@ -104,7 +104,7 @@ export default function ProcessSteps() {
 
   const cardSizing = getCardSizing();
 
-  // Adjust card styling for mobile devices
+  // Styling adjustments: ensure cards are fully opaque
   const cardBackgroundColor =
     windowWidth < 768 ? 'rgba(245, 245, 247, 0.2)' : 'rgba(245, 245, 247, 0.1)';
   const cardBorder =
@@ -120,7 +120,7 @@ export default function ProcessSteps() {
   const dynamicExtraPushY = -Math.ceil(cardHeightPx * 0.25);
   const dynamicExtraRotate = -Math.ceil(cardHeightPx * 0.02);
 
-  // Reset state smoothly whenever the section enters or leaves view.
+  // Reset the carousel whenever the section enters or leaves view
   useEffect(() => {
     setActiveIndex(1);
     setShowFinalMessage(false);
@@ -136,7 +136,15 @@ export default function ProcessSteps() {
   }, [activeIndex]);
 
   // Compute card style transformations.
+  // On mobile devices, only the active card is fully visible to prevent overlap.
   const getCardStyles = (cardIndex: number) => {
+    if (windowWidth < 768) {
+      // Only show the active card at full opacity
+      return cardIndex === activeIndex - 1
+        ? { x: 0, y: 0, rotate: 0, opacity: 1, zIndex: 30, scale: 1 }
+        : { opacity: 0 };
+    }
+    // Larger screens use the layered animation
     const { ACTIVE, BEHIND } = CARD_CONFIG;
     if (activeIndex === 1) {
       if (cardIndex === 0) return { ...ACTIVE, opacity: 1 };
@@ -311,9 +319,10 @@ export default function ProcessSteps() {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 60, opacity: 0 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute bottom-40 sm:bottom-44 md:bottom-48 z-50"
+            // Adjust the bottom spacing on mobile to avoid overlap with the card
+            className="absolute bottom-32 sm:bottom-44 md:bottom-48 z-50"
           >
-            <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl xl:text-9xl font-bold">
+            <h2 className="text-3xl sm:text-5xl md:text-6xl lg:text-8xl xl:text-9xl font-bold text-center px-4">
               All in <span className="text-[#b0ff00]">Weeks!</span>
             </h2>
           </motion.div>
