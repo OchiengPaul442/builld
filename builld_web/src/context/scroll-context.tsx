@@ -28,21 +28,20 @@ type ScrollContextType = {
 
 const ScrollContext = createContext<ScrollContextType | undefined>(undefined);
 
-// Fix type for throttle function - make it generic but constrain to functions accepting any args
+// Fix throttle function to preserve function signatures
 function throttle<T extends (...args: any[]) => void>(
   func: T,
   delay: number
-): T {
+): (...args: Parameters<T>) => void {
   let lastCall = 0;
 
-  // Create a throttled function with the same signature as the original
-  return ((...args: Parameters<T>) => {
+  return (...args: Parameters<T>) => {
     const now = Date.now();
     if (now - lastCall >= delay) {
       lastCall = now;
       func(...args);
     }
-  }) as T;
+  };
 }
 
 export const ScrollProvider = ({ children }: { children: React.ReactNode }) => {
@@ -77,7 +76,7 @@ export const ScrollProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
-  // Use inline function for useCallback to fix the dependencies warning
+  // Direct implementation without intermediate throttled functions
   const updateActiveSection = useCallback(
     (section: SectionType) => {
       if (section === activeSection || manualSectionUpdateRef.current) return;
@@ -86,16 +85,14 @@ export const ScrollProvider = ({ children }: { children: React.ReactNode }) => {
     [activeSection]
   );
 
-  // Throttled version of updateActiveSection with proper typing
+  // Create memoized throttled versions of the functions
   const throttledUpdateActiveSection = useCallback(
-    throttle<(section: SectionType) => void>(
-      (section) => updateActiveSection(section),
-      100
-    ),
+    throttle((section: SectionType) => {
+      updateActiveSection(section);
+    }, 100),
     [updateActiveSection]
   );
 
-  // Use inline function for useCallback to fix the dependencies warning
   const updateProcessCardStep = useCallback(() => {
     if (activeSection === "process") {
       const processSection = document.getElementById("section-process");
@@ -108,14 +105,15 @@ export const ScrollProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [activeSection]);
 
-  // Throttled version of updateProcessCardStep with proper typing
   const throttledUpdateProcessCardStep = useCallback(
-    throttle<() => void>(() => updateProcessCardStep(), 100),
+    throttle(() => {
+      updateProcessCardStep();
+    }, 100),
     [updateProcessCardStep]
   );
 
   useEffect(() => {
-    const handleScroll = throttle(() => {
+    const handleScroll = () => {
       if (isScrolling.current || manualSectionUpdateRef.current) return;
 
       const sections: SectionType[] = [
@@ -165,11 +163,14 @@ export const ScrollProvider = ({ children }: { children: React.ReactNode }) => {
 
       // Update process card step if in process section
       throttledUpdateProcessCardStep();
-    }, 100);
+    };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    // Apply the throttling directly
+    const throttledHandleScroll = throttle(handleScroll, 100);
+
+    window.addEventListener("scroll", throttledHandleScroll, { passive: true });
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", throttledHandleScroll);
     };
   }, [
     activeSection,

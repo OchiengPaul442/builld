@@ -19,23 +19,20 @@ export default function BackgroundAnimation({
   opacity = 1,
 }: BackgroundAnimationProps) {
   const [mounted, setMounted] = useState(false);
-  // Fix: Use LottieRefCurrentProps instead of Lottie
   const lottieRef = useRef<LottieRefCurrentProps>(null);
 
   useEffect(() => {
     setMounted(true);
 
+    // Create cleanup function that properly captures the current ref
     return () => {
-      // Store ref value in a variable to avoid React hooks exhaustive-deps warning
-      const currentRef = lottieRef.current;
-      if (currentRef) {
-        // Use type guards instead of direct method calls
-        if (typeof currentRef.pause === "function") {
-          currentRef.pause();
-        }
-        if (typeof currentRef.destroy === "function") {
-          currentRef.destroy();
-        }
+      // Fix the React hooks exhaustive-deps warning by capturing current ref
+      const currentLottieRef = lottieRef.current;
+
+      if (currentLottieRef) {
+        // Use optional chaining for safer method access
+        currentLottieRef.pause?.();
+        currentLottieRef.destroy?.();
       }
     };
   }, []);
