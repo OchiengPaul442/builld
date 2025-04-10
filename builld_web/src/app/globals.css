@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+/* Define your custom properties */
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -8,13 +9,12 @@
   --gradient-start: #06051a;
   --gradient-middle: #0a0a20;
   --gradient-end: #000000;
-}
 
-@theme inline {
+  /* Map theme variables directly */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Define the font-sans variable using Lexend */
+  --font-sans: "Lexend", sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -54,4 +54,53 @@ body {
     var(--gradient-middle),
     var(--gradient-end)
   );
+}
+
+/* Smooth scrolling for the entire site */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Animations and transitions */
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 0.8s ease forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Section transition styles */
+.section-fullscreen {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* For smoother section transitions */
+.smooth-scroll-container {
+  height: 100vh;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+}
+
+.snap-section {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.scroll-lock {
+  overscroll-behavior: none;
 }

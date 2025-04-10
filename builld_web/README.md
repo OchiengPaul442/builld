@@ -1,36 +1,119 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next.js TypeScript Project
 
-## Getting Started
+This repository contains a Next.js application built with TypeScript using the App Router architecture.
 
-First, run the development server:
+## Prerequisites
+
+Before running this project, make sure you have the following installed:
+
+- [Node.js](https://nodejs.org/) (v18.17.0 or higher)
+- [pnpm](https://pnpm.io/) (v8.0.0 or higher)
+
+## Installation
+
+Clone the repository and install dependencies using pnpm:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Clone the repository
+git clone https://github.com/Builld-technologies/Builld-frontend.git
+cd cd src/builld_web
+
+# Install dependencies
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Development
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+To start the development server:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Windows
+
+```powershell
+pnpm dev
+```
+
+### macOS / Linux
+
+```bash
+pnpm dev
+```
+
+The application will be available at [http://localhost:3000](http://localhost:3000).
+
+## Building for Production
+
+To create a production build:
+
+### Windows
+
+```powershell
+pnpm build
+```
+
+### macOS / Linux
+
+```bash
+pnpm build
+```
+
+## Running Production Build
+
+To start the production server after building:
+
+### Windows
+
+```powershell
+pnpm start
+```
+
+### macOS / Linux
+
+```bash
+pnpm start
+```
+
+## Project Structure
+
+```
+├── public/            # Static assets
+├── src/               # Source code
+│   ├── app/           # App Router routes
+│   ├── components/    # Reusable components
+│   ├── lib/           # Utility functions and libraries
+│   ├── styles/        # Global styles
+│   └── types/         # TypeScript type definitions
+├── .env.example       # Example environment variables
+├── .eslintrc.json     # ESLint configuration
+├── .gitignore         # Git ignore file
+├── next.config.js     # Next.js configuration
+├── package.json       # Project dependencies and scripts
+├── pnpm-lock.yaml     # pnpm lock file
+├── postcss.config.js  # PostCSS configuration
+├── README.md          # Project documentation (this file)
+├── tailwind.config.js # Tailwind CSS configuration (if used)
+└── tsconfig.json      # TypeScript configuration
+```
+
+## Scripts
+
+- `pnpm dev`: Start the development server
+- `pnpm build`: Build the application for production
+- `pnpm start`: Start the production server
+- `pnpm lint`: Run ESLint to check code quality
+- `pnpm test`: Run tests (if configured)
+
+## Environment Variables
+
+Copy the `.env.example` file to `.env.local` and adjust the variables as needed:
+
+```bash
+cp .env.example .env.local
+```
 
 ## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+To learn more about the technologies used in this project:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [Next.js Documentation](https://nextjs.org/docs)
+- [TypeScript Documentation](https://www.typescriptlang.org/docs/)
+- [pnpm Documentation](https://pnpm.io/motivation)
