@@ -9,7 +9,9 @@ import HeroAndAboutSections from "@/components/sections/hero-about-section";
 import ProcessSection from "@/components/sections/process/process-section";
 import ServicesSection from "@/components/sections/services-section";
 import ContactUs from "@/components/sections/contact-us";
+import dynamic from "next/dynamic";
 
+// Create a client-side only version of the Home content
 function HomeContent() {
   const { setActiveSection } = useScroll();
   const [splashComplete, setSplashComplete] = useState(false);
@@ -66,10 +68,15 @@ function HomeContent() {
   );
 }
 
-export default function Home() {
+// Wrap the entire Home component with ScrollProvider
+function HomeWrapper() {
   return (
     <ScrollProvider>
       <HomeContent />
     </ScrollProvider>
   );
 }
+
+// Use dynamic import with ssr disabled for the whole page
+const Home = dynamic(() => Promise.resolve(HomeWrapper), { ssr: false });
+export default Home;

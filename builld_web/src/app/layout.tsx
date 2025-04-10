@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Lexend } from "next/font/google";
 import "./globals.css";
 
@@ -14,7 +14,6 @@ export const metadata: Metadata = {
   description:
     "High-quality websites and digital products, delivered in weeks — not months.",
   keywords: "web development, digital products, fast development, websites",
-  themeColor: "#a0ff00",
   openGraph: {
     type: "website",
     title: "Builld | Fast-Track Your Ideas into Reality",
@@ -22,6 +21,10 @@ export const metadata: Metadata = {
       "High-quality websites and digital products, delivered in weeks — not months.",
     siteName: "Builld",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#a0ff00",
 };
 
 export default function RootLayout({

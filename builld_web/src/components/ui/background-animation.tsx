@@ -3,6 +3,7 @@
 import Lottie from "lottie-react";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import dynamic from "next/dynamic";
 import gradientBg from "@public/animations/gradient-background.json";
 
 export interface BackgroundAnimationProps {
@@ -12,19 +13,22 @@ export interface BackgroundAnimationProps {
   opacity?: number;
 }
 
-export default function BackgroundAnimation({
+// Create a client-only version of the component
+const BackgroundAnimation = ({
   animationData = gradientBg,
   withBlur = false,
   blurStrength = 100,
   opacity = 1,
-}: BackgroundAnimationProps) {
-  const [mounted, setMounted] = useState(false);
+}: BackgroundAnimationProps) => {
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    setIsMounted(true);
   }, []);
 
-  if (!mounted) return null;
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <>
@@ -62,4 +66,9 @@ export default function BackgroundAnimation({
       )}
     </>
   );
-}
+};
+
+// Create a dynamic import with ssr disabled
+export default dynamic(() => Promise.resolve(BackgroundAnimation), {
+  ssr: false,
+});
