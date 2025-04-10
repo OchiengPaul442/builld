@@ -1,4 +1,4 @@
-import { Variants } from "framer-motion";
+import { Variants } from 'framer-motion';
 
 export const fadeUpVariant: Variants = {
   hidden: {

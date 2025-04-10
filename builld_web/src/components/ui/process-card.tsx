@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 
 interface ProcessCardProps {
   title: string;
@@ -23,7 +23,7 @@ export default function ProcessCard({
   delay = 0,
 }: ProcessCardProps) {
   const [windowWidth, setWindowWidth] = useState(
-    typeof window !== "undefined" ? window.innerWidth : 1200
+    typeof window !== 'undefined' ? window.innerWidth : 1200
   );
 
   useEffect(() => {
@@ -31,9 +31,9 @@ export default function ProcessCard({
       setWindowWidth(window.innerWidth);
     };
 
-    if (typeof window !== "undefined") {
-      window.addEventListener("resize", handleResize);
-      return () => window.removeEventListener("resize", handleResize);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
     }
   }, []);
 
@@ -41,31 +41,31 @@ export default function ProcessCard({
   const getCardSize = () => {
     if (windowWidth < 640) {
       return {
-        width: "280px",
-        height: "280px",
-        padding: "40px 24px",
-        borderRadius: "24px",
+        width: '280px',
+        height: '280px',
+        padding: '40px 24px',
+        borderRadius: '24px',
       };
     } else if (windowWidth < 768) {
       return {
-        width: "340px",
-        height: "340px",
-        padding: "56px 32px",
-        borderRadius: "32px",
+        width: '340px',
+        height: '340px',
+        padding: '56px 32px',
+        borderRadius: '32px',
       };
     } else if (windowWidth < 1024) {
       return {
-        width: "380px",
-        height: "380px",
-        padding: "72px 40px",
-        borderRadius: "36px",
+        width: '380px',
+        height: '380px',
+        padding: '72px 40px',
+        borderRadius: '36px',
       };
     } else {
       return {
-        width: "432px",
-        height: "423px",
-        padding: "91px 48px",
-        borderRadius: "40px",
+        width: '432px',
+        height: '423px',
+        padding: '91px 48px',
+        borderRadius: '40px',
       };
     }
   };
@@ -102,10 +102,10 @@ export default function ProcessCard({
         className="w-full h-full flex flex-col justify-center items-center text-center"
         style={{
           padding: cardSize.padding,
-          backgroundColor: "rgba(245, 245, 247, 0.1)",
-          border: "1.5px solid rgba(245, 245, 247, 0.4)",
-          backdropFilter: "blur(100px)",
-          boxShadow: "0px 0px 20px 0px rgba(255, 255, 255, 0.4) inset",
+          backgroundColor: 'rgba(245, 245, 247, 0.1)',
+          border: '1.5px solid rgba(245, 245, 247, 0.4)',
+          backdropFilter: 'blur(100px)',
+          boxShadow: '0px 0px 20px 0px rgba(255, 255, 255, 0.4) inset',
           borderRadius: cardSize.borderRadius,
         }}
       >

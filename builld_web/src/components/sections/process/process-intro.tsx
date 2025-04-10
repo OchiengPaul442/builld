@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import Image from "next/image";
-import { useEffect, useState, useMemo } from "react";
-import { useInView } from "react-intersection-observer";
+import { motion } from 'framer-motion';
+import Image from 'next/image';
+import { useEffect, useState, useMemo } from 'react';
+import { useInView } from 'react-intersection-observer';
 
 const fadeUpVariant = {
   hidden: { opacity: 0, y: 20 },
@@ -21,40 +21,40 @@ const staggerChildren = {
 
 export default function ProcessIntro() {
   const [windowWidth, setWindowWidth] = useState(
-    typeof window !== "undefined" ? window.innerWidth : 1200
+    typeof window !== 'undefined' ? window.innerWidth : 1200
   );
   const [ref, inView] = useInView({ threshold: 0.3 });
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const logoSize = useMemo(() => {
     if (windowWidth < 640) {
       return {
-        containerSize: "w-36 h-36",
+        containerSize: 'w-36 h-36',
         logoSize: { width: 70, height: 70 },
-        roundedSize: "rounded-[40px]",
+        roundedSize: 'rounded-[40px]',
       };
     } else if (windowWidth < 768) {
       return {
-        containerSize: "w-44 h-44",
+        containerSize: 'w-44 h-44',
         logoSize: { width: 90, height: 90 },
-        roundedSize: "rounded-[50px]",
+        roundedSize: 'rounded-[50px]',
       };
     } else if (windowWidth < 1024) {
       return {
-        containerSize: "w-52 h-52",
+        containerSize: 'w-52 h-52',
         logoSize: { width: 100, height: 100 },
-        roundedSize: "rounded-[60px]",
+        roundedSize: 'rounded-[60px]',
       };
     } else {
       return {
-        containerSize: "w-60 h-60",
+        containerSize: 'w-60 h-60',
         logoSize: { width: 120, height: 120 },
-        roundedSize: "rounded-[80px]",
+        roundedSize: 'rounded-[80px]',
       };
     }
   }, [windowWidth]);
@@ -76,9 +76,9 @@ export default function ProcessIntro() {
           <div
             className={`${logoSize.containerSize} flex items-center justify-center ${logoSize.roundedSize} transform -rotate-90`}
             style={{
-              padding: "40px",
-              backgroundColor: "rgba(255, 255, 255, 0.05)",
-              backdropFilter: "blur(200px)",
+              padding: '40px',
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              backdropFilter: 'blur(200px)',
             }}
           >
             <div className="flex items-center justify-center w-full h-full">
@@ -97,7 +97,7 @@ export default function ProcessIntro() {
         <motion.div
           variants={staggerChildren}
           initial="hidden"
-          animate={inView ? "visible" : "hidden"}
+          animate={inView ? 'visible' : 'hidden'}
           className="md:col-span-8 flex flex-col"
         >
           <motion.div

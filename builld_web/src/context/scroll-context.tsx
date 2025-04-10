@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, {
   createContext,
@@ -7,16 +7,16 @@ import React, {
   useEffect,
   useRef,
   useCallback,
-} from "react";
+} from 'react';
 
 export type SectionType =
-  | "splash"
-  | "hero"
-  | "about"
-  | "process"
-  | "process-steps"
-  | "services"
-  | "contact";
+  | 'splash'
+  | 'hero'
+  | 'about'
+  | 'process'
+  | 'process-steps'
+  | 'services'
+  | 'contact';
 
 type ScrollContextType = {
   activeSection: SectionType;
@@ -46,7 +46,7 @@ function throttle<Args extends unknown[], R>(
 }
 
 export const ScrollProvider = ({ children }: { children: React.ReactNode }) => {
-  const [activeSection, setActiveSection] = useState<SectionType>("splash");
+  const [activeSection, setActiveSection] = useState<SectionType>('splash');
   const [processCardStep, setProcessCardStep] = useState(0);
   const isScrolling = useRef(false);
   const manualSectionUpdateRef = useRef(false);
@@ -64,7 +64,7 @@ export const ScrollProvider = ({ children }: { children: React.ReactNode }) => {
     manualSectionUpdateRef.current = true;
     const element = document.getElementById(`section-${section}`);
     if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
+      element.scrollIntoView({ behavior: 'smooth' });
       setActiveSection(section);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       timeoutRef.current = setTimeout(() => {
@@ -87,8 +87,8 @@ export const ScrollProvider = ({ children }: { children: React.ReactNode }) => {
   );
 
   const throttledUpdateProcessCardStep = useCallback(() => {
-    if (activeSection === "process") {
-      const processSection = document.getElementById("section-process");
+    if (activeSection === 'process') {
+      const processSection = document.getElementById('section-process');
       if (processSection) {
         const { top, height } = processSection.getBoundingClientRect();
         const progress = Math.max(0, Math.min(1, -top / height));
@@ -103,20 +103,20 @@ export const ScrollProvider = ({ children }: { children: React.ReactNode }) => {
       if (isScrolling.current || manualSectionUpdateRef.current) return;
 
       const sections: SectionType[] = [
-        "splash",
-        "hero",
-        "about",
-        "process",
-        "process-steps",
-        "services",
-        "contact",
+        'splash',
+        'hero',
+        'about',
+        'process',
+        'process-steps',
+        'services',
+        'contact',
       ];
       let maxVisibleSection: SectionType | null = null;
       let maxVisibleArea = 0;
       const windowHeight = window.innerHeight;
 
       // Batch DOM reads together
-      const sectionMeasurements = sections.map((section) => {
+      const sectionMeasurements = sections.map(section => {
         const element = document.getElementById(`section-${section}`);
         if (!element) return { section, visibleArea: 0 };
 
@@ -154,9 +154,9 @@ export const ScrollProvider = ({ children }: { children: React.ReactNode }) => {
     // Apply throttling with properly typed function
     const throttledHandleScroll = throttle(handleScroll, 100);
 
-    window.addEventListener("scroll", throttledHandleScroll, { passive: true });
+    window.addEventListener('scroll', throttledHandleScroll, { passive: true });
     return () => {
-      window.removeEventListener("scroll", throttledHandleScroll);
+      window.removeEventListener('scroll', throttledHandleScroll);
     };
   }, [
     activeSection,
@@ -182,6 +182,6 @@ export const ScrollProvider = ({ children }: { children: React.ReactNode }) => {
 export const useScroll = () => {
   const context = useContext(ScrollContext);
   if (!context)
-    throw new Error("useScroll must be used within a ScrollProvider");
+    throw new Error('useScroll must be used within a ScrollProvider');
   return context;
 };

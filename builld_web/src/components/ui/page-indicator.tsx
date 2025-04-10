@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { useScroll, SectionType } from "@/context/scroll-context";
-import { useState, useEffect, useRef } from "react";
+import { motion } from 'framer-motion';
+import { useScroll, SectionType } from '@/context/scroll-context';
+import { useState, useEffect, useRef } from 'react';
 
 export default function PageIndicator() {
   const { activeSection } = useScroll();
@@ -27,30 +27,30 @@ export default function PageIndicator() {
   useEffect(() => {
     const updateVisibility = () => setIsVisible(window.innerWidth >= 768);
     updateVisibility();
-    window.addEventListener("resize", updateVisibility);
-    return () => window.removeEventListener("resize", updateVisibility);
+    window.addEventListener('resize', updateVisibility);
+    return () => window.removeEventListener('resize', updateVisibility);
   }, []);
 
   const sections: SectionType[] = [
-    "hero",
-    "about",
-    "process",
-    "services",
-    "contact",
+    'hero',
+    'about',
+    'process',
+    'services',
+    'contact',
   ];
   const labels: Record<SectionType, string> = {
-    hero: "Home",
-    about: "About",
-    process: "Process",
-    "process-steps": "Process",
-    services: "Services",
-    contact: "Contact",
-    splash: "Splash",
+    hero: 'Home',
+    about: 'About',
+    process: 'Process',
+    'process-steps': 'Process',
+    services: 'Services',
+    contact: 'Contact',
+    splash: 'Splash',
   };
 
   // Normalize process-steps to process.
   const normalizedActiveSection =
-    stableSection === "process-steps" ? "process" : stableSection;
+    stableSection === 'process-steps' ? 'process' : stableSection;
 
   if (!isVisible) return null;
 
@@ -61,7 +61,7 @@ export default function PageIndicator() {
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.5, delay: 0.3 }}
     >
-      {sections.map((section) => {
+      {sections.map(section => {
         const isActive = normalizedActiveSection === section;
         return (
           <div
@@ -74,7 +74,7 @@ export default function PageIndicator() {
                 className="w-4 h-4 lg:w-5 lg:h-5 rounded-full border border-white absolute"
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                transition={{ type: "spring", damping: 20 }}
+                transition={{ type: 'spring', damping: 20 }}
               />
             )}
             {/* Dot indicator */}
@@ -84,7 +84,7 @@ export default function PageIndicator() {
                 scale: isActive ? 1 : 0.8,
                 opacity: isActive ? 1 : 0.6,
               }}
-              transition={{ type: "spring", damping: 15 }}
+              transition={{ type: 'spring', damping: 15 }}
             />
             {/* Tooltip */}
             <div className="opacity-0 group-hover:opacity-100 absolute right-8 whitespace-nowrap bg-black/70 backdrop-blur-sm px-2 py-1 rounded text-xs transition-opacity duration-200 pointer-events-none">

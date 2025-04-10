@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { useInView } from "react-intersection-observer";
-import { useEffect, useRef } from "react";
-import { useScroll, SectionType } from "@/context/scroll-context";
-import ProcessIntro from "./process-intro";
-import ProcessSteps from "./process-steps";
-import dynamic from "next/dynamic";
+import { useInView } from 'react-intersection-observer';
+import { useEffect, useRef } from 'react';
+import { useScroll, SectionType } from '@/context/scroll-context';
+import ProcessIntro from './process-intro';
+import ProcessSteps from './process-steps';
+import dynamic from 'next/dynamic';
 
 const BackgroundAnimation = dynamic(
-  () => import("../../ui/background-animation"),
+  () => import('../../ui/background-animation'),
   { ssr: false }
 );
 
@@ -18,13 +18,13 @@ export default function ProcessSection() {
 
   const [mainSectionRef, mainSectionInView] = useInView({
     threshold: 0.3,
-    rootMargin: "-10% 0px",
+    rootMargin: '-10% 0px',
     triggerOnce: false,
   });
 
   const [stepsRef, stepsInView] = useInView({
     threshold: 0.3,
-    rootMargin: "-10% 0px",
+    rootMargin: '-10% 0px',
     triggerOnce: false,
   });
 
@@ -32,9 +32,9 @@ export default function ProcessSection() {
     let currentSection: SectionType | null = null;
 
     if (mainSectionInView) {
-      currentSection = "process";
+      currentSection = 'process';
     } else if (stepsInView) {
-      currentSection = "process-steps";
+      currentSection = 'process-steps';
     }
 
     if (currentSection && currentSection !== prevSectionRef.current) {

@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useCallback, useRef } from "react";
-import { ScrollProvider, useScroll } from "@/context/scroll-context";
-import Header from "@/components/layout/header";
-import PageIndicator from "@/components/ui/page-indicator";
-import SplashScreen from "@/components/sections/splash-screen";
-import HeroAndAboutSections from "@/components/sections/hero-about-section";
-import ProcessSection from "@/components/sections/process/process-section";
-import ServicesSection from "@/components/sections/services-section";
-import ContactUs from "@/components/sections/contact-us";
-import dynamic from "next/dynamic";
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { ScrollProvider, useScroll } from '@/context/scroll-context';
+import Header from '@/components/layout/header';
+import PageIndicator from '@/components/ui/page-indicator';
+import SplashScreen from '@/components/sections/splash-screen';
+import HeroAndAboutSections from '@/components/sections/hero-about-section';
+import ProcessSection from '@/components/sections/process/process-section';
+import ServicesSection from '@/components/sections/services-section';
+import ContactUs from '@/components/sections/contact-us';
+import dynamic from 'next/dynamic';
 
 // Fixed throttle function - removed 'any' type
 function throttle<T extends (...args: unknown[]) => void>(
@@ -38,7 +38,7 @@ function HomeContent() {
 
   const handleSplashComplete = useCallback(() => {
     setSplashComplete(true);
-    setActiveSection("hero");
+    setActiveSection('hero');
     const timerId = setTimeout(() => {
       setStartReveal(true);
     }, 500);
@@ -68,13 +68,13 @@ function HomeContent() {
     // Store for cleanup
     scrollHandlerRef.current = throttledHandleScroll;
 
-    container.addEventListener("scroll", throttledHandleScroll, {
+    container.addEventListener('scroll', throttledHandleScroll, {
       passive: true,
     });
 
     return () => {
       if (scrollHandlerRef.current && container) {
-        container.removeEventListener("scroll", scrollHandlerRef.current);
+        container.removeEventListener('scroll', scrollHandlerRef.current);
       }
     };
   }, []);

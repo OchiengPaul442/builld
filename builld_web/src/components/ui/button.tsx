@@ -1,31 +1,31 @@
-"use client";
+'use client';
 
-import { ReactNode } from "react";
-import { motion } from "framer-motion";
+import { ReactNode } from 'react';
+import { motion } from 'framer-motion';
 
 interface ButtonProps {
   children: ReactNode;
-  variant?: "primary" | "secondary" | "outline";
+  variant?: 'primary' | 'secondary' | 'outline';
   className?: string;
   onClick?: () => void;
 }
 
 export default function Button({
   children,
-  variant = "primary",
-  className = "",
+  variant = 'primary',
+  className = '',
   onClick,
 }: ButtonProps) {
   const getVariantClasses = () => {
     switch (variant) {
-      case "primary":
-        return "bg-accent-green text-black";
-      case "secondary":
-        return "bg-accent-blue text-white";
-      case "outline":
-        return "bg-transparent border border-white text-white";
+      case 'primary':
+        return 'bg-accent-green text-black';
+      case 'secondary':
+        return 'bg-accent-blue text-white';
+      case 'outline':
+        return 'bg-transparent border border-white text-white';
       default:
-        return "bg-accent-green text-black";
+        return 'bg-accent-green text-black';
     }
   };
 

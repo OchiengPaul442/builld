@@ -1,4 +1,4 @@
-import { Variants } from "framer-motion";
+import { Variants } from 'framer-motion';
 
 type StepIndex = 0 | 1 | 2 | 3 | 4;
 type CardIndex = 1 | 2 | 3;

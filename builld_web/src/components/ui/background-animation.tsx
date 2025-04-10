@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import Lottie, { LottieRefCurrentProps } from "lottie-react";
-import { useEffect, useState, useRef } from "react";
-import { motion } from "framer-motion";
-import gradientBg from "@public/animations/gradient-background.json";
+import Lottie, { LottieRefCurrentProps } from 'lottie-react';
+import { useEffect, useState, useRef } from 'react';
+import { motion } from 'framer-motion';
+import gradientBg from '@public/animations/gradient-background.json';
 
 export interface BackgroundAnimationProps {
   animationData?: object;
@@ -30,10 +30,10 @@ export default function BackgroundAnimation({
     return () => {
       // Use the captured ref value in the cleanup
       if (currentRef) {
-        if (typeof currentRef.pause === "function") {
+        if (typeof currentRef.pause === 'function') {
           currentRef.pause();
         }
-        if (typeof currentRef.destroy === "function") {
+        if (typeof currentRef.destroy === 'function') {
           currentRef.destroy();
         }
       }
@@ -50,8 +50,8 @@ export default function BackgroundAnimation({
         animate={{ opacity }}
         transition={{ duration: 1 }}
         style={{
-          willChange: "opacity",
-          transform: "translateZ(0)",
+          willChange: 'opacity',
+          transform: 'translateZ(0)',
         }}
       >
         <Lottie
@@ -60,13 +60,13 @@ export default function BackgroundAnimation({
           loop={true}
           autoplay={true}
           style={{
-            width: "100%",
-            height: "100%",
-            position: "absolute",
-            transform: "translateZ(0)",
+            width: '100%',
+            height: '100%',
+            position: 'absolute',
+            transform: 'translateZ(0)',
           }}
           rendererSettings={{
-            preserveAspectRatio: "xMidYMid slice",
+            preserveAspectRatio: 'xMidYMid slice',
           }}
         />
       </motion.div>
@@ -74,9 +74,9 @@ export default function BackgroundAnimation({
       <div
         className="absolute inset-0 z-[1] w-full h-full"
         style={{
-          backgroundColor: "rgba(0, 0, 0, 0.5)",
-          willChange: "opacity",
-          transform: "translateZ(0)",
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          willChange: 'opacity',
+          transform: 'translateZ(0)',
         }}
       ></div>
 
@@ -88,9 +88,9 @@ export default function BackgroundAnimation({
           transition={{ duration: 1 }}
           style={{
             backdropFilter: `blur(${blurStrength}px)`,
-            backgroundColor: "rgba(255, 255, 255, 0.1)",
-            willChange: "opacity",
-            transform: "translateZ(0)",
+            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+            willChange: 'opacity',
+            transform: 'translateZ(0)',
           }}
         />
       )}

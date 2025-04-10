@@ -1,21 +1,21 @@
-"use client";
+'use client';
 
-import { useEffect, useState, useMemo, useRef } from "react";
-import { motion } from "framer-motion";
-import Image from "next/image";
-import localFont from "next/font/local";
+import { useEffect, useState, useMemo, useRef } from 'react';
+import { motion } from 'framer-motion';
+import Image from 'next/image';
+import localFont from 'next/font/local';
 
 // Load your local Doubleplus font (OTF)
 const doubleplus = localFont({
   src: [
     {
-      path: "../../../public/fonts/Doubleplus.otf",
-      weight: "400",
-      style: "normal",
+      path: '../../../public/fonts/Doubleplus.otf',
+      weight: '400',
+      style: 'normal',
     },
   ],
-  variable: "--font-doubleplus",
-  display: "swap",
+  variable: '--font-doubleplus',
+  display: 'swap',
 });
 
 interface SplashScreenProps {
@@ -66,7 +66,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
       if (t < 1) {
         animationFrameRef.current = requestAnimationFrame(animate);
       } else {
-        setCurrentMilestone((prev) => prev + 1);
+        setCurrentMilestone(prev => prev + 1);
       }
     };
 
@@ -108,7 +108,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
 
   // Use memo to calculate logo size based on window width (only once on mount and resize)
   const logoSize = useMemo(() => {
-    if (typeof window !== "undefined") {
+    if (typeof window !== 'undefined') {
       const width = window.innerWidth;
       if (width < 640) return { width: 160, height: 40 };
       if (width < 768) return { width: 200, height: 50 };
@@ -122,9 +122,9 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
     <motion.div
       className={`${doubleplus.className} fixed inset-0 z-50 flex items-center justify-center bg-black will-change-transform`}
       initial={{ y: 0 }}
-      animate={{ y: isExiting ? "-100%" : 0 }}
+      animate={{ y: isExiting ? '-100%' : 0 }}
       transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
-      style={{ transform: "translateZ(0)" }}
+      style={{ transform: 'translateZ(0)' }}
     >
       {/* Logo with floating animation */}
       <motion.div
@@ -132,11 +132,11 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
         animate={{ y: [0, -10, 0] }}
         transition={{
           duration: 2,
-          ease: "easeInOut",
+          ease: 'easeInOut',
           repeat: Infinity,
-          repeatType: "mirror",
+          repeatType: 'mirror',
         }}
-        style={{ transform: "translate3d(-50%, -50%, 0)" }}
+        style={{ transform: 'translate3d(-50%, -50%, 0)' }}
       >
         <Image
           src="/logo.png"
@@ -153,7 +153,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
             className="h-full rounded bg-[#b0ff00] will-change-transform"
             style={{
               width: `${progress}%`,
-              transform: "translateZ(0)",
+              transform: 'translateZ(0)',
             }}
           />
         </div>

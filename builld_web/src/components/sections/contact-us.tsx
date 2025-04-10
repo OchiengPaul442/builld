@@ -1,20 +1,20 @@
 // src/components/sections/contact-us.tsx
-"use client";
+'use client';
 
-import { useEffect, useRef } from "react";
-import { motion } from "framer-motion";
-import { useInView } from "react-intersection-observer";
-import { useScroll } from "@/context/scroll-context";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as Yup from "yup";
+import { useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
+import { useInView } from 'react-intersection-observer';
+import { useScroll } from '@/context/scroll-context';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as Yup from 'yup';
 
-import PhoneInput from "react-phone-input-2";
-import "react-phone-input-2/lib/style.css";
-import { parsePhoneNumberFromString } from "libphonenumber-js";
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
 
-import { useContactForm } from "@/hooks/useContactForm";
-import { useToast } from "@/components/ui/toast";
+import { useContactForm } from '@/hooks/useContactForm';
+import { useToast } from '@/components/ui/toast';
 
 // Define the form data type
 interface FormData {
@@ -27,26 +27,26 @@ interface FormData {
 // Define validation schema using Yup
 const validationSchema = Yup.object().shape({
   email: Yup.string()
-    .email("Invalid email format")
-    .required("Email is required"),
+    .email('Invalid email format')
+    .required('Email is required'),
   phoneNumber: Yup.string()
-    .required("Phone number is required")
+    .required('Phone number is required')
     .test(
-      "is-valid-phone",
-      "Please enter a valid phone number",
+      'is-valid-phone',
+      'Please enter a valid phone number',
       function (value) {
         if (!value) return false;
         // Ensure the phone number has a leading plus
         let phoneStr = value.trim();
-        if (!phoneStr.startsWith("+")) {
-          phoneStr = "+" + phoneStr;
+        if (!phoneStr.startsWith('+')) {
+          phoneStr = '+' + phoneStr;
         }
         const phone = parsePhoneNumberFromString(phoneStr);
         return phone ? phone.isValid() : false;
       }
     ),
-  businessStage: Yup.string().required("Please select a business stage"),
-  challenge: Yup.string().required("Please describe your biggest challenge"),
+  businessStage: Yup.string().required('Please select a business stage'),
+  challenge: Yup.string().required('Please describe your biggest challenge'),
 });
 
 // Simpler animation variants with better performance
@@ -55,7 +55,7 @@ const fadeIn = {
   visible: (delay = 0) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.4, delay, ease: "easeOut" },
+    transition: { duration: 0.4, delay, ease: 'easeOut' },
   }),
 };
 
@@ -104,7 +104,7 @@ export default function ContactUs() {
 
       if (inView) {
         // Debounce the section update to avoid rapid changes during scroll
-        timeoutRef.current = setTimeout(() => setActiveSection("contact"), 100);
+        timeoutRef.current = setTimeout(() => setActiveSection('contact'), 100);
       }
     }
   }, [inView, setActiveSection]);
@@ -114,17 +114,17 @@ export default function ContactUs() {
     try {
       const result = await submitContactForm(data);
       if (result) {
-        showToast("Message sent successfully!", {
-          type: "success",
-          position: "bottom-right",
+        showToast('Message sent successfully!', {
+          type: 'success',
+          position: 'bottom-right',
           description: "We'll get back to you as soon as possible.",
         });
         reset();
       }
-    } catch (_) {
-      showToast("Failed to send message. Please try again.", {
-        type: "error",
-        position: "bottom-right",
+    } catch {
+      showToast('Failed to send message. Please try again.', {
+        type: 'error',
+        position: 'bottom-right',
       });
     }
   };
@@ -133,9 +133,9 @@ export default function ContactUs() {
   const handleResetForm = () => {
     resetForm();
     reset();
-    showToast("Ready for a new message", {
-      type: "info",
-      position: "bottom-right",
+    showToast('Ready for a new message', {
+      type: 'info',
+      position: 'bottom-right',
     });
   };
 
@@ -151,17 +151,17 @@ export default function ContactUs() {
           <motion.h2
             className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6"
             initial="hidden"
-            animate={inView ? "visible" : "hidden"}
+            animate={inView ? 'visible' : 'hidden'}
             variants={fadeIn}
             custom={0}
           >
-            Let&apos;s Build <span className="text-[#b0ff00]">Something</span>{" "}
+            Let&apos;s Build <span className="text-[#b0ff00]">Something</span>{' '}
             Together
           </motion.h2>
           <motion.p
             className="text-base sm:text-lg text-gray-300 mb-6 sm:mb-8"
             initial="hidden"
-            animate={inView ? "visible" : "hidden"}
+            animate={inView ? 'visible' : 'hidden'}
             variants={fadeIn}
             custom={0.1}
           >
@@ -171,7 +171,7 @@ export default function ContactUs() {
           <motion.div
             className="space-y-4"
             initial="hidden"
-            animate={inView ? "visible" : "hidden"}
+            animate={inView ? 'visible' : 'hidden'}
             variants={fadeIn}
             custom={0.2}
           >
@@ -192,10 +192,10 @@ export default function ContactUs() {
           onSubmit={handleSubmit(onSubmit)}
           className="w-full max-w-xl bg-zinc-800/50 backdrop-blur-lg p-6 sm:p-7 md:p-8 rounded-xl sm:rounded-2xl"
           initial="hidden"
-          animate={inView ? "visible" : "hidden"}
+          animate={inView ? 'visible' : 'hidden'}
           variants={fadeIn}
           custom={0.3}
-          style={{ transform: "translateZ(0)" }}
+          style={{ transform: 'translateZ(0)' }}
         >
           {isSuccess ? (
             <motion.div
@@ -247,7 +247,7 @@ export default function ContactUs() {
                   <input
                     type="email"
                     id="email"
-                    {...register("email")}
+                    {...register('email')}
                     placeholder="your@email.com"
                     className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-zinc-700/50 
                                border border-zinc-600 rounded-lg text-white 
@@ -273,39 +273,39 @@ export default function ContactUs() {
                     enableSearch={true}
                     value=""
                     onChange={(value: string) =>
-                      setValue("phoneNumber", value, { shouldValidate: true })
+                      setValue('phoneNumber', value, { shouldValidate: true })
                     }
                     containerStyle={{
-                      width: "100%",
+                      width: '100%',
                     }}
                     inputStyle={{
-                      width: "100%",
-                      height: "51px",
-                      background: "#3f3f46",
-                      color: "white",
-                      border: "gray",
-                      borderRadius: "0.5rem",
-                      paddingLeft: "3rem",
-                      outline: "none",
-                      fontSize: "0.875rem",
+                      width: '100%',
+                      height: '51px',
+                      background: '#3f3f46',
+                      color: 'white',
+                      border: 'gray',
+                      borderRadius: '0.5rem',
+                      paddingLeft: '3rem',
+                      outline: 'none',
+                      fontSize: '0.875rem',
                     }}
                     buttonStyle={{
-                      background: "#3f3f46",
-                      color: "white",
-                      border: "1px solid rgba(107, 114, 128, 1)",
-                      borderRadius: "0.5rem 0 0 0.5rem",
-                      outline: "none",
+                      background: '#3f3f46',
+                      color: 'white',
+                      border: '1px solid rgba(107, 114, 128, 1)',
+                      borderRadius: '0.5rem 0 0 0.5rem',
+                      outline: 'none',
                     }}
                     dropdownStyle={{
-                      background: "white/10",
-                      color: "black",
-                      border: "gray",
+                      background: 'white/10',
+                      color: 'black',
+                      border: 'gray',
                       zIndex: 9999,
                     }}
                     searchStyle={{
-                      background: "rgba(55, 65, 81, 0.5)",
-                      color: "white",
-                      borderRadius: "0.25rem",
+                      background: 'rgba(55, 65, 81, 0.5)',
+                      color: 'white',
+                      borderRadius: '0.25rem',
                     }}
                   />
                   {errors.phoneNumber && (
@@ -325,7 +325,7 @@ export default function ContactUs() {
                   </label>
                   <select
                     id="businessStage"
-                    {...register("businessStage")}
+                    {...register('businessStage')}
                     className="w-full px-3 sm:px-4 py-2 sm:py-3 
                                bg-zinc-700/50 border border-zinc-600 
                                rounded-lg text-white 
@@ -353,7 +353,7 @@ export default function ContactUs() {
                 </label>
                 <textarea
                   id="challenge"
-                  {...register("challenge")}
+                  {...register('challenge')}
                   rows={4}
                   className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-zinc-700/50 
                              border border-zinc-600 rounded-lg text-white 
@@ -379,7 +379,7 @@ export default function ContactUs() {
                 whileHover={{ scale: isLoading ? 1 : 1.02 }}
                 whileTap={{ scale: isLoading ? 1 : 0.98 }}
               >
-                {isLoading ? "Sending..." : "Send Message"}
+                {isLoading ? 'Sending...' : 'Send Message'}
               </motion.button>
             </>
           )}

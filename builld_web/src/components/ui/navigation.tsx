@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useScroll, SectionType } from "@/context/scroll-context";
-import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useScroll, SectionType } from '@/context/scroll-context';
+import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 
 interface NavigationProps {
   isMobile?: boolean;
@@ -25,14 +25,14 @@ export default function Navigation({
     section: SectionType;
     activeSections?: SectionType[];
   }> = [
-    { label: "About", section: "about" },
+    { label: 'About', section: 'about' },
     {
-      label: "Process",
-      section: "process",
-      activeSections: ["process", "process-steps"],
+      label: 'Process',
+      section: 'process',
+      activeSections: ['process', 'process-steps'],
     },
-    { label: "Services", section: "services" },
-    { label: "Contact", section: "contact" },
+    { label: 'Services', section: 'services' },
+    { label: 'Contact', section: 'contact' },
   ];
 
   // Check if a nav item should be active based on current section
@@ -56,14 +56,14 @@ export default function Navigation({
   if (isMobile) {
     return (
       <div className="w-full flex flex-col space-y-4">
-        {navItems.map((item) => (
+        {navItems.map(item => (
           <motion.button
             key={item.label}
             onClick={() => handleNavClick(item.section)}
             className={`cursor-pointer py-3 px-2 text-left text-lg font-medium border-b border-gray-700/30 ${
               isActive(item)
-                ? "text-accent-green"
-                : "text-white hover:text-accent-green"
+                ? 'text-accent-green'
+                : 'text-white hover:text-accent-green'
             }`}
             whileTap={{ scale: 0.97 }}
           >
@@ -77,14 +77,14 @@ export default function Navigation({
   // Desktop navigation appearance
   return (
     <nav className="hidden md:flex items-center space-x-6 lg:space-x-10">
-      {navItems.map((item) => (
+      {navItems.map(item => (
         <motion.button
           key={item.label}
           onClick={() => handleNavClick(item.section)}
           className={`cursor-pointer text-sm lg:text-base font-medium transition-colors ${
             isActive(item)
-              ? "text-accent-green"
-              : "text-white hover:text-accent-green"
+              ? 'text-accent-green'
+              : 'text-white hover:text-accent-green'
           }`}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}

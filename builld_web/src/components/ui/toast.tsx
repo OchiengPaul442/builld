@@ -1,29 +1,29 @@
 // src/components/ui/toast.tsx
-"use client";
+'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   IoClose,
   IoCheckmarkCircle,
   IoWarning,
   IoInformation,
-} from "react-icons/io5";
+} from 'react-icons/io5';
 
 // Brand colors
 const BRAND = {
-  primary: "#b0ff00", // Lime green
-  dark: "#000000", // Black
+  primary: '#b0ff00', // Lime green
+  dark: '#000000', // Black
 };
 
-export type ToastType = "success" | "error" | "info" | "warning";
+export type ToastType = 'success' | 'error' | 'info' | 'warning';
 export type ToastPosition =
-  | "top-right"
-  | "top-left"
-  | "bottom-right"
-  | "bottom-left"
-  | "top-center"
-  | "bottom-center";
+  | 'top-right'
+  | 'top-left'
+  | 'bottom-right'
+  | 'bottom-left'
+  | 'top-center'
+  | 'bottom-center';
 
 interface ToastProps {
   message: string;
@@ -42,7 +42,7 @@ const getToastVariants = (position: ToastPosition) => {
   let yTo = 0;
 
   // For bottom positions, reverse the y direction
-  if (position.startsWith("bottom")) {
+  if (position.startsWith('bottom')) {
     yFrom = 20;
     yTo = 0;
   }
@@ -77,20 +77,20 @@ const getToastVariants = (position: ToastPosition) => {
 // Get position classes for the toast container
 const getPositionClasses = (position: ToastPosition): string => {
   switch (position) {
-    case "top-left":
-      return "top-4 left-4";
-    case "top-center":
-      return "top-4 left-1/2 -translate-x-1/2";
-    case "top-right":
-      return "top-4 right-4";
-    case "bottom-left":
-      return "bottom-4 left-4";
-    case "bottom-center":
-      return "bottom-4 left-1/2 -translate-x-1/2";
-    case "bottom-right":
-      return "bottom-4 right-4";
+    case 'top-left':
+      return 'top-4 left-4';
+    case 'top-center':
+      return 'top-4 left-1/2 -translate-x-1/2';
+    case 'top-right':
+      return 'top-4 right-4';
+    case 'bottom-left':
+      return 'bottom-4 left-4';
+    case 'bottom-center':
+      return 'bottom-4 left-1/2 -translate-x-1/2';
+    case 'bottom-right':
+      return 'bottom-4 right-4';
     default:
-      return "top-4 right-4";
+      return 'top-4 right-4';
   }
 };
 
@@ -104,11 +104,11 @@ interface ToastStyle {
 const Toast: React.FC<ToastProps> = ({
   message,
   description,
-  type = "success", // Default to success instead of info
+  type = 'success', // Default to success instead of info
   duration = 4000,
   onClose,
   isVisible,
-  position = "top-right",
+  position = 'top-right',
 }) => {
   const [progress, setProgress] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -188,29 +188,29 @@ const Toast: React.FC<ToastProps> = ({
   // Design properties based on toast type
   const getToastStyle = useCallback((): ToastStyle => {
     switch (type) {
-      case "success":
+      case 'success':
         return {
           icon: <IoCheckmarkCircle className="text-xl" />,
           accentColor: BRAND.primary,
           iconColor: BRAND.primary,
         };
-      case "error":
+      case 'error':
         return {
           icon: <IoWarning className="text-xl" />,
-          accentColor: "#ff4d4d", // Red
-          iconColor: "#ff4d4d",
+          accentColor: '#ff4d4d', // Red
+          iconColor: '#ff4d4d',
         };
-      case "warning":
+      case 'warning':
         return {
           icon: <IoWarning className="text-xl" />,
-          accentColor: "#ffcc00", // Amber
-          iconColor: "#ffcc00",
+          accentColor: '#ffcc00', // Amber
+          iconColor: '#ffcc00',
         };
-      case "info":
+      case 'info':
         return {
           icon: <IoInformation className="text-xl" />,
-          accentColor: "#3399ff", // Blue
-          iconColor: "#3399ff",
+          accentColor: '#3399ff', // Blue
+          iconColor: '#3399ff',
         };
     }
   }, [type]);
@@ -232,10 +232,10 @@ const Toast: React.FC<ToastProps> = ({
           <div
             className="rounded-lg shadow-lg overflow-hidden max-w-md backdrop-blur-sm text-white"
             style={{
-              backgroundColor: "rgba(0, 0, 0, 0.85)",
+              backgroundColor: 'rgba(0, 0, 0, 0.85)',
               borderLeft: `4px solid ${toastStyle.accentColor}`,
               boxShadow:
-                "0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1)",
+                '0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1)',
             }}
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
@@ -270,9 +270,9 @@ const Toast: React.FC<ToastProps> = ({
               <motion.div
                 className="h-full"
                 style={{ backgroundColor: toastStyle.accentColor }}
-                initial={{ width: "0%" }}
+                initial={{ width: '0%' }}
                 animate={{ width: `${progress}%` }}
-                transition={{ duration: 0.1, ease: "linear" }}
+                transition={{ duration: 0.1, ease: 'linear' }}
               />
             </div>
           </div>
@@ -313,10 +313,10 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [toast, setToast] = useState<ToastState>({
-    message: "",
-    type: "success",
+    message: '',
+    type: 'success',
     duration: 4000,
-    position: "top-right",
+    position: 'top-right',
     isVisible: false,
   });
 
@@ -332,15 +332,15 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
     setToast({
       message,
       description: options?.description,
-      type: options?.type || "success",
+      type: options?.type || 'success',
       duration: options?.duration || 4000,
-      position: options?.position || "top-right",
+      position: options?.position || 'top-right',
       isVisible: true,
     });
   };
 
   const hideToast = () => {
-    setToast((prev) => ({ ...prev, isVisible: false }));
+    setToast(prev => ({ ...prev, isVisible: false }));
   };
 
   return (
@@ -362,7 +362,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
 export const useToast = () => {
   const context = React.useContext(ToastContext);
   if (context === undefined) {
-    throw new Error("useToast must be used within a ToastProvider");
+    throw new Error('useToast must be used within a ToastProvider');
   }
   return context;
 };

@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import { motion, AnimatePresence, useInView } from "framer-motion";
-import { IoChevronForwardOutline, IoChevronBackOutline } from "react-icons/io5";
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { motion, AnimatePresence, useInView } from 'framer-motion';
+import { IoChevronForwardOutline, IoChevronBackOutline } from 'react-icons/io5';
 
 interface ProcessCardData {
   title: string;
@@ -12,19 +12,19 @@ interface ProcessCardData {
 
 const processCards: ProcessCardData[] = [
   {
-    title: "Pre-Project",
-    description: "Planning, onboarding, and defining the scope.",
+    title: 'Pre-Project',
+    description: 'Planning, onboarding, and defining the scope.',
     id: 1,
   },
   {
-    title: "During Project",
+    title: 'During Project',
     description:
-      "Design sprints, prototype reviews, and iterative development.",
+      'Design sprints, prototype reviews, and iterative development.',
     id: 2,
   },
   {
-    title: "Close & Post-Project",
-    description: "Deployment, client handover, and optional support.",
+    title: 'Close & Post-Project',
+    description: 'Deployment, client handover, and optional support.',
     id: 3,
   },
 ];
@@ -39,9 +39,9 @@ const CARD_CONFIG = {
   MULTIPLIER: 2,
   BEHIND: { offsetY: 15, offsetX: 10, rotate: -8 },
   CARD_SIZES: {
-    DESKTOP: { width: "432px", height: "423px", padding: "91px 48px" },
-    TABLET: { width: "360px", height: "350px", padding: "60px 36px" },
-    MOBILE: { width: "270px", height: "270px", padding: "40px 24px" },
+    DESKTOP: { width: '432px', height: '423px', padding: '91px 48px' },
+    TABLET: { width: '360px', height: '350px', padding: '60px 36px' },
+    MOBILE: { width: '270px', height: '270px', padding: '40px 24px' },
   },
 };
 
@@ -49,7 +49,7 @@ export default function ProcessSteps() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [showFinalMessage, setShowFinalMessage] = useState(false);
   const [windowWidth, setWindowWidth] = useState(
-    typeof window !== "undefined" ? window.innerWidth : 1200
+    typeof window !== 'undefined' ? window.innerWidth : 1200
   );
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: false, amount: 0.3 });
@@ -58,8 +58,8 @@ export default function ProcessSteps() {
   // Update window width on resize
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const getBaseDisplacement = useCallback(() => {
@@ -239,12 +239,12 @@ export default function ProcessSteps() {
                   width: cardSizing.width,
                   height: cardSizing.height,
                   zIndex: styles.zIndex,
-                  transformOrigin: "center center",
+                  transformOrigin: 'center center',
                 }}
                 // Remove initial opacity settings to prevent a fade effect.
                 animate={styles}
                 transition={{
-                  type: "spring",
+                  type: 'spring',
                   stiffness: 75,
                   damping: 22,
                   opacity: { duration: 0 },
@@ -254,11 +254,11 @@ export default function ProcessSteps() {
                   className="w-full h-full flex flex-col justify-center items-center text-center rounded-[40px]"
                   style={{
                     padding: cardSizing.padding,
-                    backgroundColor: "rgba(245, 245, 247, 0.1)",
-                    border: "1.5px solid rgba(245, 245, 247, 0.4)",
-                    backdropFilter: "blur(100px)",
+                    backgroundColor: 'rgba(245, 245, 247, 0.1)',
+                    border: '1.5px solid rgba(245, 245, 247, 0.4)',
+                    backdropFilter: 'blur(100px)',
                     boxShadow:
-                      "0px 0px 20px 0px rgba(255, 255, 255, 0.4) inset",
+                      '0px 0px 20px 0px rgba(255, 255, 255, 0.4) inset',
                   }}
                 >
                   <h3 className="text-xl sm:text-2xl md:text-3xl font-normal mb-4 md:mb-6">
@@ -281,8 +281,8 @@ export default function ProcessSteps() {
           disabled={activeIndex <= 1}
           className={`rounded-full border border-white/30 p-3 md:p-4 transition-all duration-300 ${
             activeIndex <= 1
-              ? "text-white/30 cursor-not-allowed"
-              : "text-white hover:bg-white/10"
+              ? 'text-white/30 cursor-not-allowed'
+              : 'text-white hover:bg-white/10'
           }`}
           aria-label="Previous step"
         >
@@ -293,11 +293,11 @@ export default function ProcessSteps() {
           onClick={() => activeIndex < 3 && setActiveIndex(activeIndex + 1)}
           disabled={activeIndex === 3}
           className={`rounded-full border ${
-            activeIndex === 3 ? "border-white/30" : "border-white"
+            activeIndex === 3 ? 'border-white/30' : 'border-white'
           } p-3 md:p-4 transition-all duration-300 ${
             activeIndex === 3
-              ? "text-white/30 cursor-not-allowed"
-              : "text-white hover:bg-white/10"
+              ? 'text-white/30 cursor-not-allowed'
+              : 'text-white hover:bg-white/10'
           }`}
           aria-label="Next step"
         >

@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { useState, useEffect, useCallback } from "react";
-import Logo from "@/components/ui/logo";
-import Navigation from "@/components/ui/navigation";
-import { useScroll } from "@/context/scroll-context";
+import { motion } from 'framer-motion';
+import { useState, useEffect, useCallback } from 'react';
+import Logo from '@/components/ui/logo';
+import Navigation from '@/components/ui/navigation';
+import { useScroll } from '@/context/scroll-context';
 
 interface HeaderProps {
   hideHeader: boolean;
@@ -17,7 +17,7 @@ export default function Header({ hideHeader }: HeaderProps) {
 
   // Only render header if activeSection isn't "splash"
   useEffect(() => {
-    setShouldRender(activeSection !== "splash");
+    setShouldRender(activeSection !== 'splash');
   }, [activeSection]);
 
   // Handle resize events for mobile menu.
@@ -25,13 +25,13 @@ export default function Header({ hideHeader }: HeaderProps) {
     const handleResize = () => {
       if (window.innerWidth >= 768) setMenuOpen(false);
     };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   // Toggle mobile menu.
   const toggleMenu = useCallback(() => {
-    setMenuOpen((prev) => !prev);
+    setMenuOpen(prev => !prev);
   }, []);
 
   // Close mobile menu if clicking outside.
@@ -46,8 +46,8 @@ export default function Header({ hideHeader }: HeaderProps) {
         setMenuOpen(false);
       }
     };
-    document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
   }, [menuOpen]);
 
   if (!shouldRender) return null;
@@ -62,12 +62,12 @@ export default function Header({ hideHeader }: HeaderProps) {
     <motion.header
       // Use semantic <header> element.
       className={`fixed top-0 left-0 right-0 z-50 p-4 sm:p-5 md:p-6 lg:px-10 transition-colors duration-300 ${
-        menuOpen ? "bg-black/80 backdrop-blur-lg" : "bg-transparent"
+        menuOpen ? 'bg-black/80 backdrop-blur-lg' : 'bg-transparent'
       }`}
       initial="visible"
-      animate={hideHeader ? "hidden" : "visible"}
+      animate={hideHeader ? 'hidden' : 'visible'}
       variants={headerVariants}
-      style={{ pointerEvents: hideHeader ? "none" : "auto" }}
+      style={{ pointerEvents: hideHeader ? 'none' : 'auto' }}
     >
       <div className="flex justify-between items-center max-w-7xl w-full mx-auto">
         <Logo />
@@ -76,10 +76,10 @@ export default function Header({ hideHeader }: HeaderProps) {
           <button
             onClick={toggleMenu}
             className="text-white p-2 focus:outline-none"
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
           >
             <motion.div
-              animate={menuOpen ? "open" : "closed"}
+              animate={menuOpen ? 'open' : 'closed'}
               initial={false}
               variants={{
                 open: { rotate: 180 },
@@ -90,7 +90,7 @@ export default function Header({ hideHeader }: HeaderProps) {
             >
               <motion.span
                 className="absolute block h-0.5 bg-white w-6"
-                style={{ top: "40%" }}
+                style={{ top: '40%' }}
                 variants={{
                   open: { rotate: 45, translateY: 1 },
                   closed: { rotate: 0, translateY: 0 },
@@ -99,7 +99,7 @@ export default function Header({ hideHeader }: HeaderProps) {
               />
               <motion.span
                 className="absolute block h-0.5 bg-white w-6"
-                style={{ top: "60%" }}
+                style={{ top: '60%' }}
                 variants={{
                   open: { rotate: -45, translateY: -1 },
                   closed: { rotate: 0, translateY: 0 },
@@ -114,11 +114,11 @@ export default function Header({ hideHeader }: HeaderProps) {
         // Use semantic <nav> element.
         initial={{ height: 0, opacity: 0 }}
         animate={{
-          height: menuOpen ? "auto" : 0,
+          height: menuOpen ? 'auto' : 0,
           opacity: menuOpen ? 1 : 0,
-          display: menuOpen ? "block" : "none",
+          display: menuOpen ? 'block' : 'none',
         }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
         className="md:hidden absolute top-full left-0 right-0 bg-black/90 backdrop-blur-xl overflow-hidden"
         data-menu="container"
       >
