@@ -103,6 +103,7 @@ export default function HeroAndAboutSections({
         className="section-fullscreen snap-section gradient-bg flex items-center justify-center relative"
       >
         <BackgroundAnimation />
+        
         <div className="max-w-7xl w-full px-4 sm:px-6 md:px-10 mx-auto relative z-10">
           <div className="flex flex-col items-center text-center">
             {/* Use the startReveal prop to control animation */}

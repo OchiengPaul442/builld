@@ -46,10 +46,18 @@ export default function BackgroundAnimation({
         />
       </motion.div>
 
+      <div
+        className="absolute inset-0 z-[1] w-full h-full"
+        style={{
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          willChange: "opacity",
+        }}
+      ></div>
+
       {/* Blur Overlay */}
       {withBlur && (
         <motion.div
-          className="absolute inset-0 z-[1] w-full h-full"
+          className="absolute inset-0 z-[2] w-full h-full"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
