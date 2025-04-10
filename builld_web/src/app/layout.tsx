@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Lexend } from 'next/font/google';
 import { ToastProvider } from '@/components/ui/toast';
 import './globals.css';
+import { Analytics } from '@vercel/analytics/react';
 
 // Load Lexend font
 const lexend = Lexend({
@@ -36,7 +37,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={lexend.className}>
       <body>
-        <ToastProvider>{children}</ToastProvider>
+        <ToastProvider>
+          {children}
+          <Analytics />
+        </ToastProvider>
       </body>
     </html>
   );
