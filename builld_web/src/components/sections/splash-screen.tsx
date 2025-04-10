@@ -178,7 +178,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            {milestones[currentMilestone]}%
+            {milestones[currentMilestone]} %
           </motion.div>
         </div>
       </div>
