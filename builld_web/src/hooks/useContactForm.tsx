@@ -10,13 +10,19 @@ export interface ContactFormData {
   challenge: string;
 }
 
+// API response type
+interface ContactFormResponse {
+  message: string;
+  status: number;
+}
+
 // Create a fetcher function for SWR mutation
 const postContactData = async (
   url: string,
   { arg }: { arg: ContactFormData }
-) => {
+): Promise<ContactFormResponse> => {
   try {
-    const response = await axios.post(url, arg, {
+    const response = await axios.post<ContactFormResponse>(url, arg, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -30,10 +36,12 @@ const postContactData = async (
 
 export function useContactForm() {
   const [isSuccess, setIsSuccess] = useState(false);
+  const [responseMessage, setResponseMessage] = useState<string>('');
 
   // Get API URL with fallback to ensure it's never undefined
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || '';
-  const contactEndpoint = `${apiBaseUrl}/api/contact/`;
+  const apiBaseUrl =
+    process.env.NEXT_PUBLIC_API_URL || 'https://api.builld.tech';
+  const contactEndpoint = `${apiBaseUrl}/api/contact`;
 
   // Use SWR mutation for making the API call
   const {
@@ -47,19 +55,36 @@ export function useContactForm() {
   const submitContactForm = async (data: ContactFormData) => {
     try {
       console.log(`Submitting to: ${contactEndpoint}`);
-      await trigger(data);
+      const response = await trigger(data);
+
+      // Store response message to display in toast
+      setResponseMessage(response.message);
       setIsSuccess(true);
-      return true;
+      return {
+        success: true,
+        message: response.message,
+      };
     } catch (err) {
       console.error('Contact form submission failed:', err);
       setIsSuccess(false);
-      return false;
+
+      // Extract error message if available
+      let errorMessage = 'Failed to send message. Please try again.';
+      if (axios.isAxiosError(err) && err.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      }
+
+      return {
+        success: false,
+        message: errorMessage,
+      };
     }
   };
 
   // Reset the form state
   const resetForm = () => {
     setIsSuccess(false);
+    setResponseMessage('');
     resetSWR();
   };
 
@@ -67,6 +92,7 @@ export function useContactForm() {
     submitContactForm,
     isLoading,
     isSuccess,
+    responseMessage,
     error: error as Error | null,
     resetForm,
   };

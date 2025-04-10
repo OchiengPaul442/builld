@@ -19,16 +19,26 @@ export default function BackgroundAnimation({
   opacity = 1,
 }: BackgroundAnimationProps) {
   const [mounted, setMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const lottieRef = useRef<LottieRefCurrentProps>(null);
 
   useEffect(() => {
+    // Ensure this code only runs on the client
     setMounted(true);
-
-    // Capture the current ref value for use in the cleanup function
+    if (typeof window !== 'undefined') {
+      const mobile = window.innerWidth < 768; // adjust threshold as needed
+      setIsMobile(mobile);
+      if (
+        mobile &&
+        lottieRef.current &&
+        typeof lottieRef.current.pause === 'function'
+      ) {
+        lottieRef.current.pause();
+      }
+    }
+    // Capture current lottieRef for cleanup
     const currentRef = lottieRef.current;
-
     return () => {
-      // Use the captured ref value in the cleanup
       if (currentRef) {
         if (typeof currentRef.pause === 'function') {
           currentRef.pause();
@@ -57,8 +67,9 @@ export default function BackgroundAnimation({
         <Lottie
           lottieRef={lottieRef}
           animationData={animationData}
-          loop={true}
-          autoplay={true}
+          // Disable looping and autoplay on mobile devices
+          autoplay={!isMobile}
+          loop={!isMobile}
           style={{
             width: '100%',
             height: '100%',

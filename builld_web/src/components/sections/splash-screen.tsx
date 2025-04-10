@@ -27,7 +27,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
   const [currentMilestone, setCurrentMilestone] = useState(0);
   const [isExiting, setIsExiting] = useState(false);
 
-  // Use refs to keep track of animation frames and timeouts for cleanup
+  // Refs for animation frames and timeouts
   const animationFrameRef = useRef<number | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const exitTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -35,22 +35,25 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
   const milestones = useMemo(() => [0, 25, 50, 75, 100], []);
   const duration = 800;
 
-  // Clear all timeouts and animation frames on unmount
+  // Determine if the device is mobile based on window width
+  const isMobile = useMemo(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth < 768;
+    }
+    return false;
+  }, []);
+
+  // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (animationFrameRef.current) {
+      if (animationFrameRef.current)
         cancelAnimationFrame(animationFrameRef.current);
-      }
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-      if (exitTimeoutRef.current) {
-        clearTimeout(exitTimeoutRef.current);
-      }
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (exitTimeoutRef.current) clearTimeout(exitTimeoutRef.current);
     };
   }, []);
 
-  // Progress animation with proper cleanup
+  // Progress animation with cleanup
   useEffect(() => {
     if (currentMilestone >= milestones.length - 1) return;
 
@@ -78,35 +81,29 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
     );
 
     return () => {
-      if (animationFrameRef.current) {
+      if (animationFrameRef.current)
         cancelAnimationFrame(animationFrameRef.current);
-      }
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, [currentMilestone, milestones]);
 
-  // Handle completion and exit animation
+  // Handle exit animation and onComplete callback
   useEffect(() => {
     if (currentMilestone === milestones.length - 1) {
       exitTimeoutRef.current = setTimeout(() => {
         setIsExiting(true);
-        // Callback after exit animation completes
         exitTimeoutRef.current = setTimeout(() => {
           if (onComplete) onComplete();
         }, 800);
       }, 500);
 
       return () => {
-        if (exitTimeoutRef.current) {
-          clearTimeout(exitTimeoutRef.current);
-        }
+        if (exitTimeoutRef.current) clearTimeout(exitTimeoutRef.current);
       };
     }
   }, [currentMilestone, milestones.length, onComplete]);
 
-  // Use memo to calculate logo size based on window width (only once on mount and resize)
+  // Calculate logo size based on window width
   const logoSize = useMemo(() => {
     if (typeof window !== 'undefined') {
       const width = window.innerWidth;
@@ -120,37 +117,56 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
 
   return (
     <motion.div
-      className={`${doubleplus.className} fixed inset-0 z-50 flex items-center justify-center bg-black will-change-transform`}
+      className={`${doubleplus.className} fixed inset-0 z-50 flex items-center justify-center bg-black`}
       initial={{ y: 0 }}
       animate={{ y: isExiting ? '-100%' : 0 }}
       transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
       style={{ transform: 'translateZ(0)' }}
     >
-      {/* Logo with floating animation */}
-      <motion.div
-        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 will-change-transform"
-        animate={{ y: [0, -10, 0] }}
-        transition={{
-          duration: 2,
-          ease: 'easeInOut',
-          repeat: Infinity,
-          repeatType: 'mirror',
-        }}
-        style={{ transform: 'translate3d(-50%, -50%, 0)' }}
-      >
-        <Image
-          src="/logo.png"
-          alt="Build Logo"
-          width={logoSize.width}
-          height={logoSize.height}
-          priority
-          className="w-auto h-auto"
-        />
-      </motion.div>
+      {isMobile ? (
+        // Static logo for mobile; centered using the same absolute positioning.
+        <div
+          className="absolute top-1/2 left-1/2"
+          style={{
+            transform: 'translate(-50%, -50%)',
+          }}
+        >
+          <Image
+            src="/logo.png"
+            alt="Build Logo"
+            width={logoSize.width}
+            height={logoSize.height}
+            priority
+            className="w-auto h-auto"
+          />
+        </div>
+      ) : (
+        // Floating animated logo for larger screens
+        <motion.div
+          className="absolute top-1/2 left-1/2"
+          style={{ transform: 'translate(-50%, -50%)' }}
+          animate={{ y: [0, -10, 0] }}
+          transition={{
+            duration: 2,
+            ease: 'easeInOut',
+            repeat: Infinity,
+            repeatType: 'mirror',
+          }}
+        >
+          <Image
+            src="/logo.png"
+            alt="Build Logo"
+            width={logoSize.width}
+            height={logoSize.height}
+            priority
+            className="w-auto h-auto"
+          />
+        </motion.div>
+      )}
       <div className="absolute bottom-4 sm:bottom-6 md:bottom-8 left-0 right-0 px-6 sm:px-8 md:px-12">
         <div className="h-1 sm:h-1.5 w-full rounded bg-[#1a1a1a] relative">
           <motion.div
-            className="h-full rounded bg-[#b0ff00] will-change-transform"
+            className="h-full rounded bg-[#b0ff00]"
             style={{
               width: `${progress}%`,
               transform: 'translateZ(0)',

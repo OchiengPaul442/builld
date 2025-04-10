@@ -67,8 +67,13 @@ export default function ContactUs() {
   });
 
   // Use the contact form hook
-  const { submitContactForm, isLoading, isSuccess, resetForm } =
-    useContactForm();
+  const {
+    submitContactForm,
+    isLoading,
+    isSuccess,
+    responseMessage,
+    resetForm,
+  } = useContactForm();
   const { showToast } = useToast();
 
   // Use a ref to track the previous inView state
@@ -113,16 +118,25 @@ export default function ContactUs() {
   const onSubmit = async (data: FormData) => {
     try {
       const result = await submitContactForm(data);
-      if (result) {
-        showToast('Message sent successfully!', {
+
+      if (result.success) {
+        // Show success toast with the API response message
+        showToast(result.message || 'Message sent successfully!', {
           type: 'success',
           position: 'bottom-right',
           description: "We'll get back to you as soon as possible.",
         });
-        reset();
+        reset(); // Reset the form
+      } else {
+        // Show error toast with the error message
+        showToast(result.message, {
+          type: 'error',
+          position: 'bottom-right',
+        });
       }
     } catch {
-      showToast('Failed to send message. Please try again.', {
+      // Fallback error message if something unexpected happens
+      showToast('Failed to send message. Please try again later.', {
         type: 'error',
         position: 'bottom-right',
       });
@@ -133,6 +147,10 @@ export default function ContactUs() {
   const handleResetForm = () => {
     resetForm();
     reset();
+    showToast('Ready for a new message', {
+      type: 'info',
+      position: 'bottom-right',
+    });
   };
 
   return (
@@ -219,7 +237,8 @@ export default function ContactUs() {
               </div>
               <h3 className="text-2xl font-bold mb-3">Message Sent!</h3>
               <p className="text-gray-300">
-                We&apos;ll get back to you as soon as possible.
+                {responseMessage ||
+                  "We'll get back to you as soon as possible."}
               </p>
               <button
                 type="button"
