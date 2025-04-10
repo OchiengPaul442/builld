@@ -125,10 +125,8 @@ export default function HeroAndAboutSections({
                     className="relative inline-flex"
                   >
                     <div
-                      className="flex items-center justify-center rounded-3xl"
+                      className="flex items-center w-12 h-12 md:w-20 md:h-20 justify-center rounded-2xl md:rounded-3xl"
                       style={{
-                        width: "5rem",
-                        height: "5rem",
                         backgroundColor: "rgba(255, 255, 255, 0.05)",
                         backdropFilter: "blur(66.67px)",
                       }}
