@@ -4,7 +4,11 @@ import { motion } from "framer-motion";
 import { useState, useEffect, useMemo } from "react";
 import { useScroll } from "@/context/scroll-context";
 import { useInView } from "react-intersection-observer";
-import BackgroundAnimation from "../ui/background-animation";
+import dynamic from "next/dynamic";
+const BackgroundAnimation = dynamic(
+  () => import("../ui/background-animation"),
+  { ssr: false }
+);
 
 type PlanPeriod = "monthly" | "quarterly" | "yearly";
 

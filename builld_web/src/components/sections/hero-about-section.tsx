@@ -6,7 +6,12 @@ import Image from "next/image";
 import { FaArrowRight } from "react-icons/fa";
 import { useInView } from "react-intersection-observer";
 import { useScroll } from "../../context/scroll-context";
-import BackgroundAnimation from "../ui/background-animation";
+
+import dynamic from "next/dynamic";
+const BackgroundAnimation = dynamic(
+  () => import("../ui/background-animation"),
+  { ssr: false }
+);
 
 const ANIMATION_DURATION = 0.4;
 const STAGGER_DELAY = 0.1;

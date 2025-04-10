@@ -2,10 +2,14 @@
 
 import { useInView } from "react-intersection-observer";
 import { useEffect } from "react";
-import BackgroundAnimation from "../../ui/background-animation";
 import { useScroll } from "@/context/scroll-context";
 import ProcessIntro from "./process-intro";
 import ProcessSteps from "./process-steps";
+import dynamic from "next/dynamic";
+const BackgroundAnimation = dynamic(
+  () => import("../../ui/background-animation"),
+  { ssr: false }
+);
 
 export default function ProcessSection() {
   const { setActiveSection } = useScroll();
