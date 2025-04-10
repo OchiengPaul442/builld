@@ -10,10 +10,8 @@
   --gradient-middle: #0a0a20;
   --gradient-end: #000000;
 
-  /* Map theme variables directly */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  /* Define the font-sans variable using Lexend */
   --font-sans: 'Lexend', sans-serif;
 }
 
@@ -26,9 +24,9 @@
 
 html,
 body {
-  overscroll-behavior: none; /* Prevent bounce effects for better performance */
-  -webkit-font-smoothing: antialiased; /* Smoother text on webkit browsers */
-  -moz-osx-font-smoothing: grayscale; /* Smoother text on Firefox */
+  overscroll-behavior: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
@@ -72,8 +70,8 @@ html {
 .fade-in {
   opacity: 0;
   animation: fadeIn 0.8s ease forwards;
-  will-change: opacity; /* Hint to browser about what will change */
-  transform: translateZ(0); /* Force GPU acceleration */
+  will-change: opacity;
+  transform: translateZ(0);
 }
 
 @keyframes fadeIn {
@@ -87,7 +85,7 @@ html {
 
 /* Section transition styles */
 .section-fullscreen {
-  min-height: 100dvh;
+  min-height: 100vh;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -95,29 +93,29 @@ html {
   justify-content: center;
   position: relative;
   overflow: hidden;
-  will-change: transform; /* Optimize for transforms */
-  transform: translateZ(0); /* Force GPU acceleration */
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 /* For smoother section transitions */
 .smooth-scroll-container {
-  height: 100dvh;
+  height: 100vh;
   overflow-y: auto;
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-  overscroll-behavior-y: none; /* Prevent bounce on newer browsers */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: none;
 }
 
 .snap-section {
   scroll-snap-align: start;
   scroll-snap-stop: always;
-  will-change: transform; /* Optimize for transforms */
+  will-change: transform;
 }
 
 .scroll-lock {
   overscroll-behavior: none;
-  touch-action: none; /* Disable browser handling of touch gestures */
+  touch-action: none;
 }
 
 /* Add performance optimizations for animations */
@@ -132,8 +130,7 @@ html {
 
 /* Optimize for mobile devices */
 @media (max-width: 768px) {
-  /* Reduce animation complexity on mobile */
   .smooth-scroll-container {
-    scroll-snap-type: y proximity; /* Less aggressive snapping on mobile */
+    scroll-snap-type: y proximity;
   }
 }
