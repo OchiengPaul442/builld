@@ -256,7 +256,6 @@ export default function HeroAndAboutSections({
                   padding: "40px",
                   backgroundColor: "rgba(255, 255, 255, 0.05)",
                   backdropFilter: "blur(200px)",
-                  transform: "translateZ(0) rotate(-45deg)",
                 }}
               >
                 <Image
