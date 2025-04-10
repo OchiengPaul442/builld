@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import gradientBg from "@public/animations/gradient-background.json";
 
-interface BackgroundAnimationProps {
+export interface BackgroundAnimationProps {
   animationData?: object;
   withBlur?: boolean;
   blurStrength?: number;
@@ -32,12 +32,13 @@ export default function BackgroundAnimation({
       <motion.div
         className="absolute inset-0 z-0 w-full h-full overflow-hidden"
         initial={{ opacity: 0 }}
-        animate={{ opacity: opacity }}
+        animate={{ opacity }}
         transition={{ duration: 1 }}
+        style={{ willChange: "opacity" }}
       >
         <Lottie
           animationData={animationData}
-          loop={true}
+          loop
           style={{ width: "100%", height: "100%", position: "absolute" }}
           rendererSettings={{
             preserveAspectRatio: "xMidYMid slice",
@@ -45,16 +46,17 @@ export default function BackgroundAnimation({
         />
       </motion.div>
 
-      {/* Blur Overlay - Configurable strength */}
+      {/* Blur Overlay */}
       {withBlur && (
         <motion.div
-          className="absolute inset-0 z-1 w-full h-full"
+          className="absolute inset-0 z-[1] w-full h-full"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
           style={{
             backdropFilter: `blur(${blurStrength}px)`,
             backgroundColor: "rgba(255, 255, 255, 0.1)",
+            willChange: "opacity",
           }}
         />
       )}
