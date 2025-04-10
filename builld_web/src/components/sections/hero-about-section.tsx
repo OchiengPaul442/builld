@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { FaArrowRight } from "react-icons/fa";
 import { useInView } from "react-intersection-observer";
-import { useScroll } from "../../context/scroll-context";
+import { useScroll, SectionType } from "../../context/scroll-context";
 
 import dynamic from "next/dynamic";
 const BackgroundAnimation = dynamic(
@@ -26,6 +26,7 @@ const staggerContainer = {
   visible: { transition: { delayChildren: 0, staggerChildren: STAGGER_DELAY } },
 };
 
+// Type-safe window width hook
 const useWindowWidth = () => {
   const [width, setWidth] = useState(
     typeof window !== "undefined" ? window.innerWidth : 1200
@@ -76,7 +77,7 @@ export default function HeroAndAboutSections({
   const prevSectionRef = useRef<string | null>(null);
 
   useEffect(() => {
-    let newSection = null;
+    let newSection: SectionType | null = null;
     if (heroInView) {
       newSection = "hero";
     } else if (aboutInView) {
@@ -84,7 +85,7 @@ export default function HeroAndAboutSections({
     }
 
     if (newSection && newSection !== prevSectionRef.current) {
-      setActiveSection(newSection as any);
+      setActiveSection(newSection);
       prevSectionRef.current = newSection;
     }
   }, [heroInView, aboutInView, setActiveSection]);

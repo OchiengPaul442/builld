@@ -11,22 +11,22 @@ import ServicesSection from "@/components/sections/services-section";
 import ContactUs from "@/components/sections/contact-us";
 import dynamic from "next/dynamic";
 
-// Throttle function to limit execution frequency
-function throttle<T extends (...args: any[]) => any>(
+// Fixed throttle function - removed 'any' type
+function throttle<T extends (...args: unknown[]) => void>(
   func: T,
   delay: number
-): (...args: Parameters<T>) => void {
+): T {
   let lastCall = 0;
-  return (...args: Parameters<T>) => {
+
+  return ((...args: Parameters<T>) => {
     const now = Date.now();
     if (now - lastCall >= delay) {
       lastCall = now;
       func(...args);
     }
-  };
+  }) as T;
 }
 
-// Create a client-side only version of the Home content
 function HomeContent() {
   const { setActiveSection } = useScroll();
   const [splashComplete, setSplashComplete] = useState(false);
@@ -49,7 +49,8 @@ function HomeContent() {
     const container = scrollContainerRef.current;
     if (!container) return;
 
-    scrollHandlerRef.current = throttle(() => {
+    // Create a properly typed scroll handler
+    const handleScroll = () => {
       const currentScrollTop = container.scrollTop;
 
       if (currentScrollTop > prevScrollTop.current && currentScrollTop > 100) {
@@ -59,9 +60,15 @@ function HomeContent() {
       }
 
       prevScrollTop.current = currentScrollTop;
-    }, 100);
+    };
 
-    container.addEventListener("scroll", scrollHandlerRef.current, {
+    // Create throttled version with proper typing
+    const throttledHandleScroll = throttle(handleScroll, 100);
+
+    // Store for cleanup
+    scrollHandlerRef.current = throttledHandleScroll;
+
+    container.addEventListener("scroll", throttledHandleScroll, {
       passive: true,
     });
 
@@ -90,7 +97,6 @@ function HomeContent() {
   );
 }
 
-// Wrap the entire Home component with ScrollProvider
 function HomeWrapper() {
   return (
     <ScrollProvider>
@@ -99,7 +105,6 @@ function HomeWrapper() {
   );
 }
 
-// Use dynamic import with ssr disabled for the whole page
 const Home = dynamic(() => Promise.resolve(HomeWrapper), {
   ssr: false,
   loading: () => <div className="h-screen w-screen bg-black"></div>,

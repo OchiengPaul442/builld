@@ -2,7 +2,7 @@
 
 import { useInView } from "react-intersection-observer";
 import { useEffect, useRef } from "react";
-import { useScroll } from "@/context/scroll-context";
+import { useScroll, SectionType } from "@/context/scroll-context";
 import ProcessIntro from "./process-intro";
 import ProcessSteps from "./process-steps";
 import dynamic from "next/dynamic";
@@ -29,7 +29,7 @@ export default function ProcessSection() {
   });
 
   useEffect(() => {
-    let currentSection = null;
+    let currentSection: SectionType | null = null;
 
     if (mainSectionInView) {
       currentSection = "process";
@@ -38,7 +38,7 @@ export default function ProcessSection() {
     }
 
     if (currentSection && currentSection !== prevSectionRef.current) {
-      setActiveSection(currentSection as any);
+      setActiveSection(currentSection);
       prevSectionRef.current = currentSection;
     }
   }, [mainSectionInView, stepsInView, setActiveSection]);
