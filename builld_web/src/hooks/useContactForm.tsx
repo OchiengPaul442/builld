@@ -40,7 +40,7 @@ export function useContactForm() {
 
   // Get API URL with fallback to ensure it's never undefined
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || '';
-  const contactEndpoint = `${apiBaseUrl}/api/contact/`;
+  const contactEndpoint = `${apiBaseUrl}/api/contact`;
 
   // Use SWR mutation for making the API call
   const {
