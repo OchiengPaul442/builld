@@ -1,7 +1,7 @@
 // src/components/sections/contact-us.tsx
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { useScroll } from "@/context/scroll-context";
@@ -67,7 +67,7 @@ export default function ContactUs() {
   });
 
   // Use the contact form hook
-  const { submitContactForm, isLoading, isSuccess, error, resetForm } =
+  const { submitContactForm, isLoading, isSuccess, resetForm } =
     useContactForm();
   const { showToast } = useToast();
 
@@ -121,7 +121,7 @@ export default function ContactUs() {
         });
         reset();
       }
-    } catch (err) {
+    } catch (_) {
       showToast("Failed to send message. Please try again.", {
         type: "error",
         position: "bottom-right",
