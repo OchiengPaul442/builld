@@ -1,3 +1,4 @@
+// src/components/sections/contact-us.tsx
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -11,6 +12,9 @@ import * as Yup from "yup";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
+
+import { useContactForm } from "@/hooks/useContactForm";
+import { useToast } from "@/components/ui/toast";
 
 // Define the form data type
 interface FormData {
@@ -61,7 +65,11 @@ export default function ContactUs() {
     threshold: 0.3,
     triggerOnce: false,
   });
-  const [formSubmitted, setFormSubmitted] = useState(false);
+
+  // Use the contact form hook
+  const { submitContactForm, isLoading, isSuccess, error, resetForm } =
+    useContactForm();
+  const { showToast } = useToast();
 
   // Use a ref to track the previous inView state
   const prevInViewRef = useRef(false);
@@ -101,16 +109,34 @@ export default function ContactUs() {
     }
   }, [inView, setActiveSection]);
 
-  const onSubmit = () => {
-    // Simulate async request with cleanup
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
+  // Handle form submission using the contactForm hook
+  const onSubmit = async (data: FormData) => {
+    try {
+      const result = await submitContactForm(data);
+      if (result) {
+        showToast("Message sent successfully!", {
+          type: "success",
+          position: "bottom-right",
+          description: "We'll get back to you as soon as possible.",
+        });
+        reset();
+      }
+    } catch (err) {
+      showToast("Failed to send message. Please try again.", {
+        type: "error",
+        position: "bottom-right",
+      });
     }
+  };
 
-    timeoutRef.current = setTimeout(() => {
-      setFormSubmitted(true);
-      reset();
-    }, 500);
+  // Reset the form and contact form state
+  const handleResetForm = () => {
+    resetForm();
+    reset();
+    showToast("Ready for a new message", {
+      type: "info",
+      position: "bottom-right",
+    });
   };
 
   return (
@@ -169,9 +195,9 @@ export default function ContactUs() {
           animate={inView ? "visible" : "hidden"}
           variants={fadeIn}
           custom={0.3}
-          style={{ transform: "translateZ(0)" }} // Force GPU acceleration
+          style={{ transform: "translateZ(0)" }}
         >
-          {formSubmitted ? (
+          {isSuccess ? (
             <motion.div
               className="flex flex-col items-center justify-center h-full py-10 text-center"
               initial={{ opacity: 0, scale: 0.9 }}
@@ -202,7 +228,7 @@ export default function ContactUs() {
               <button
                 type="button"
                 className="mt-6 py-2 px-4 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors"
-                onClick={() => setFormSubmitted(false)}
+                onClick={handleResetForm}
               >
                 Send Another Message
               </button>
@@ -345,13 +371,15 @@ export default function ContactUs() {
               {/* Submit Button */}
               <motion.button
                 type="submit"
+                disabled={isLoading}
                 className="w-full py-3 sm:py-4 bg-[#9de600c4] 
                            rounded-lg text-base sm:text-lg font-medium 
-                           hover:scale-95 transition-all duration-200"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                           hover:scale-95 transition-all duration-200
+                           disabled:opacity-70 disabled:cursor-not-allowed"
+                whileHover={{ scale: isLoading ? 1 : 1.02 }}
+                whileTap={{ scale: isLoading ? 1 : 0.98 }}
               >
-                Send Message
+                {isLoading ? "Sending..." : "Send Message"}
               </motion.button>
             </>
           )}
