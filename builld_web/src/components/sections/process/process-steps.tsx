@@ -129,7 +129,6 @@ export default function ProcessSteps() {
   // Compute card style transformations without opacity changes.
   const getCardStyles = (cardIndex: number) => {
     const { ACTIVE, BEHIND } = CARD_CONFIG;
-    // All cards will be fully opaque (opacity: 1) to avoid the glitch.
     if (activeIndex === 0) {
       return {
         y: 0,
@@ -204,7 +203,7 @@ export default function ProcessSteps() {
   return (
     <div
       ref={sectionRef}
-      className="w-full h-screen max-w-7xl mx-auto flex flex-col items-center justify-center relative overflow-hidden"
+      className="w-full h-dvh max-w-7xl mx-auto flex flex-col items-center justify-center relative overflow-hidden"
     >
       {/* Step Indicator */}
       <div className="absolute left-4 md:left-0 top-32 sm:top-48 md:top-64 z-50">
@@ -225,7 +224,7 @@ export default function ProcessSteps() {
       </div>
 
       {/* Card Container */}
-      <div className="h-screen flex items-center justify-center max-w-7xl w-full mx-auto">
+      <div className="h-dvh flex items-center justify-center max-w-7xl w-full mx-auto">
         <div
           className="relative"
           style={{ width: cardSizing.width, height: cardSizing.height }}

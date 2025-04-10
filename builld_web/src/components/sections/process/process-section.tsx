@@ -1,11 +1,12 @@
 "use client";
 
 import { useInView } from "react-intersection-observer";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useScroll } from "@/context/scroll-context";
 import ProcessIntro from "./process-intro";
 import ProcessSteps from "./process-steps";
 import dynamic from "next/dynamic";
+
 const BackgroundAnimation = dynamic(
   () => import("../../ui/background-animation"),
   { ssr: false }
@@ -13,12 +14,33 @@ const BackgroundAnimation = dynamic(
 
 export default function ProcessSection() {
   const { setActiveSection } = useScroll();
-  const [mainSectionRef, mainSectionInView] = useInView({ threshold: 0.4 });
-  const [stepsRef, stepsInView] = useInView({ threshold: 0.4 });
+  const prevSectionRef = useRef<string | null>(null);
+
+  const [mainSectionRef, mainSectionInView] = useInView({
+    threshold: 0.3,
+    rootMargin: "-10% 0px",
+    triggerOnce: false,
+  });
+
+  const [stepsRef, stepsInView] = useInView({
+    threshold: 0.3,
+    rootMargin: "-10% 0px",
+    triggerOnce: false,
+  });
 
   useEffect(() => {
-    if (mainSectionInView) setActiveSection("process");
-    else if (stepsInView) setActiveSection("process-steps");
+    let currentSection = null;
+
+    if (mainSectionInView) {
+      currentSection = "process";
+    } else if (stepsInView) {
+      currentSection = "process-steps";
+    }
+
+    if (currentSection && currentSection !== prevSectionRef.current) {
+      setActiveSection(currentSection as any);
+      prevSectionRef.current = currentSection;
+    }
   }, [mainSectionInView, stepsInView, setActiveSection]);
 
   return (
@@ -26,7 +48,7 @@ export default function ProcessSection() {
       <section
         ref={mainSectionRef}
         id="section-process"
-        className="relative section-fullscreen snap-section min-h-screen w-full flex items-center"
+        className="relative section-fullscreen snap-section min-h-screen w-full flex items-center will-change-transform"
       >
         <BackgroundAnimation withBlur={true} />
         <div className="max-w-7xl w-full mx-auto">
@@ -36,7 +58,7 @@ export default function ProcessSection() {
       <section
         ref={stepsRef}
         id="section-process-steps"
-        className="relative z-10 section-fullscreen snap-section min-h-screen w-full flex items-center justify-center"
+        className="relative z-10 section-fullscreen snap-section min-h-screen w-full flex items-center justify-center will-change-transform"
       >
         <BackgroundAnimation withBlur={true} />
         <div className="max-w-7xl w-full mx-auto">

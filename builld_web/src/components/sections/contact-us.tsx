@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { useScroll } from "@/context/scroll-context";
@@ -45,19 +45,29 @@ const validationSchema = Yup.object().shape({
   challenge: Yup.string().required("Please describe your biggest challenge"),
 });
 
+// Simpler animation variants with better performance
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
   visible: (delay = 0) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, delay },
+    transition: { duration: 0.4, delay, ease: "easeOut" },
   }),
 };
 
 export default function ContactUs() {
   const { setActiveSection } = useScroll();
-  const [ref, inView] = useInView({ threshold: 0.3 });
+  const [ref, inView] = useInView({
+    threshold: 0.3,
+    triggerOnce: false,
+  });
   const [formSubmitted, setFormSubmitted] = useState(false);
+
+  // Use a ref to track the previous inView state
+  const prevInViewRef = useRef(false);
+
+  // Timeout ref for proper cleanup
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Use react-hook-form with Yup validation
   const {
@@ -70,16 +80,34 @@ export default function ContactUs() {
     resolver: yupResolver(validationSchema),
   });
 
+  // Cleanup timeouts
   useEffect(() => {
-    if (inView) {
-      const timer = setTimeout(() => setActiveSection("contact"), 100);
-      return () => clearTimeout(timer);
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    // Only update section if the view state changed
+    if (inView !== prevInViewRef.current) {
+      prevInViewRef.current = inView;
+
+      if (inView) {
+        // Debounce the section update to avoid rapid changes during scroll
+        timeoutRef.current = setTimeout(() => setActiveSection("contact"), 100);
+      }
     }
   }, [inView, setActiveSection]);
 
   const onSubmit = () => {
-    // Simulate async request
-    setTimeout(() => {
+    // Simulate async request with cleanup
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    timeoutRef.current = setTimeout(() => {
       setFormSubmitted(true);
       reset();
     }, 500);
@@ -89,7 +117,7 @@ export default function ContactUs() {
     <section
       id="section-contact"
       ref={ref}
-      className="section-fullscreen snap-section bg-black flex items-center justify-center py-10 sm:py-12 md:py-16 px-4 sm:px-6 md:px-8"
+      className="section-fullscreen snap-section bg-black flex items-center justify-center py-10 sm:py-12 md:py-16 px-4 sm:px-6 md:px-8 will-change-transform"
     >
       <div className="relative z-10 max-w-7xl w-full mx-auto flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12">
         {/* Left content */}
@@ -141,13 +169,14 @@ export default function ContactUs() {
           animate={inView ? "visible" : "hidden"}
           variants={fadeIn}
           custom={0.3}
+          style={{ transform: "translateZ(0)" }} // Force GPU acceleration
         >
           {formSubmitted ? (
             <motion.div
               className="flex flex-col items-center justify-center h-full py-10 text-center"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.4 }}
             >
               <div className="w-16 h-16 bg-[#b0ff00] rounded-full flex items-center justify-center mb-6">
                 <svg

@@ -28,6 +28,21 @@ type ScrollContextType = {
 
 const ScrollContext = createContext<ScrollContextType | undefined>(undefined);
 
+// Throttle function to limit execution frequency
+function throttle<T extends (...args: any[]) => any>(
+  func: T,
+  delay: number
+): (...args: Parameters<T>) => void {
+  let lastCall = 0;
+  return (...args: Parameters<T>) => {
+    const now = Date.now();
+    if (now - lastCall >= delay) {
+      lastCall = now;
+      func(...args);
+    }
+  };
+}
+
 export const ScrollProvider = ({ children }: { children: React.ReactNode }) => {
   const [activeSection, setActiveSection] = useState<SectionType>("splash");
   const [processCardStep, setProcessCardStep] = useState(0);
@@ -60,17 +75,33 @@ export const ScrollProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
-  const debouncedSetActiveSection = useCallback(
-    (section: SectionType) => {
+  // Use throttling for section detection to improve performance
+  const updateActiveSection = useCallback(
+    throttle((section: SectionType) => {
       if (section === activeSection || manualSectionUpdateRef.current) return;
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      timeoutRef.current = setTimeout(() => setActiveSection(section), 100);
-    },
+      setActiveSection(section);
+    }, 100),
+    [activeSection]
+  );
+
+  // Throttled calculation of process card step
+  const updateProcessCardStep = useCallback(
+    throttle(() => {
+      if (activeSection === "process") {
+        const processSection = document.getElementById("section-process");
+        if (processSection) {
+          const { top, height } = processSection.getBoundingClientRect();
+          const progress = Math.max(0, Math.min(1, -top / height));
+          const newStep = Math.min(4, Math.floor(progress * 5));
+          setProcessCardStep(newStep);
+        }
+      }
+    }, 100),
     [activeSection]
   );
 
   useEffect(() => {
-    const handleScroll = () => {
+    const handleScroll = throttle(() => {
       if (isScrolling.current || manualSectionUpdateRef.current) return;
 
       const sections: SectionType[] = [
@@ -86,46 +117,47 @@ export const ScrollProvider = ({ children }: { children: React.ReactNode }) => {
       let maxVisibleArea = 0;
       const windowHeight = window.innerHeight;
 
-      sections.forEach((section) => {
+      // Batch DOM reads together
+      const sectionMeasurements = sections.map((section) => {
         const element = document.getElementById(`section-${section}`);
-        if (!element) return;
+        if (!element) return { section, visibleArea: 0 };
+
         const { top, bottom } = element.getBoundingClientRect();
         const visibleTop = Math.max(0, top);
         const visibleBottom = Math.min(windowHeight, bottom);
+
+        let visibleArea = 0;
         if (visibleBottom > visibleTop) {
-          const visibleArea = visibleBottom - visibleTop;
-          const adjustedArea =
-            visibleArea * (1 + (1 - visibleTop / windowHeight) * 0.1);
-          if (adjustedArea > maxVisibleArea) {
-            maxVisibleArea = adjustedArea;
-            maxVisibleSection = section;
-          }
+          visibleArea = visibleBottom - visibleTop;
+          // Apply weighting based on position (favor sections near the top)
+          const weightFactor = 1 + (1 - visibleTop / windowHeight) * 0.1;
+          visibleArea *= weightFactor;
         }
+
+        return { section, visibleArea };
       });
 
-      if (maxVisibleSection && maxVisibleSection !== activeSection) {
-        debouncedSetActiveSection(maxVisibleSection);
-      }
-
-      if (activeSection === "process") {
-        const processSection = document.getElementById("section-process");
-        if (processSection) {
-          const { top, height } = processSection.getBoundingClientRect();
-          const progress = Math.max(0, Math.min(1, -top / height));
-          const newStep = Math.min(4, Math.floor(progress * 5));
-          setProcessCardStep(newStep);
+      // Find section with maximum visible area
+      for (const { section, visibleArea } of sectionMeasurements) {
+        if (visibleArea > maxVisibleArea) {
+          maxVisibleArea = visibleArea;
+          maxVisibleSection = section;
         }
       }
-    };
+
+      if (maxVisibleSection && maxVisibleSection !== activeSection) {
+        updateActiveSection(maxVisibleSection);
+      }
+
+      // Update process card step if in process section
+      updateProcessCardStep();
+    }, 100);
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("wheel", handleScroll, { passive: true });
-    handleScroll();
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("wheel", handleScroll);
     };
-  }, [activeSection, debouncedSetActiveSection]);
+  }, [activeSection, updateActiveSection, updateProcessCardStep]);
 
   return (
     <ScrollContext.Provider

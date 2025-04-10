@@ -1,10 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useScroll } from "@/context/scroll-context";
 import { useInView } from "react-intersection-observer";
 import dynamic from "next/dynamic";
+
 const BackgroundAnimation = dynamic(
   () => import("../ui/background-animation"),
   { ssr: false }
@@ -39,12 +40,34 @@ export default function ServicesSection() {
     LaunchPad: false,
     Ignite: false,
   });
-  const [ref, inView] = useInView({ threshold: 0.3 });
+  const [ref, inView] = useInView({
+    threshold: 0.3,
+    triggerOnce: false,
+    rootMargin: "-10% 0px",
+  });
+  const prevInViewRef = useRef(false);
+
+  // Use timeoutRef for cleanup
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Cleanup effect
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
-    if (inView) {
-      const timer = setTimeout(() => setActiveSection("services"), 50);
-      return () => clearTimeout(timer);
+    // Only update if view state has changed
+    if (inView !== prevInViewRef.current) {
+      prevInViewRef.current = inView;
+
+      if (inView) {
+        // Use ref for the timeout to ensure proper cleanup
+        timeoutRef.current = setTimeout(() => setActiveSection("services"), 50);
+      }
     }
   }, [inView, setActiveSection]);
 
@@ -55,7 +78,7 @@ export default function ServicesSection() {
     }));
   };
 
-  // Memoize plans to avoid unnecessary re-creation on re-renders.
+  // Memoize plans to avoid unnecessary re-creation on re-renders
   const plans: Plan[] = useMemo(
     () => [
       {
@@ -98,11 +121,22 @@ export default function ServicesSection() {
     []
   );
 
+  // Spring animation config - more performant than defaults
+  const springConfig = useMemo(
+    () => ({
+      type: "spring",
+      stiffness: 300,
+      damping: 30,
+      mass: 0.5,
+    }),
+    []
+  );
+
   return (
     <section
       id="section-services"
       ref={ref}
-      className="section-fullscreen snap-section bg-gradient-to-br from-purple-800 to-purple-900 flex flex-col items-center justify-center py-12 px-4 md:px-6 overflow-y-auto"
+      className="section-fullscreen snap-section bg-gradient-to-br from-purple-800 to-purple-900 flex flex-col items-center justify-center py-12 px-4 md:px-6 overflow-y-auto will-change-transform"
     >
       <BackgroundAnimation withBlur />
       <div className="relative z-10 text-center mb-6 md:mb-8 max-w-7xl w-full mx-auto">
@@ -136,9 +170,9 @@ export default function ServicesSection() {
             key={plan.name}
             className={`p-5 md:p-6 rounded-2xl shadow-xl ${
               plan.isLight ? "bg-white text-gray-900" : "bg-gray-900 text-white"
-            }`}
+            } will-change-transform`}
             whileHover={{ scale: 1.02 }}
-            transition={{ type: "spring", stiffness: 300 }}
+            transition={springConfig}
           >
             <div className="mb-4">
               <h3 className="text-2xl md:text-3xl font-bold">{plan.name}</h3>
@@ -210,8 +244,12 @@ export default function ServicesSection() {
                   height: showOptionalServices[plan.name] ? "auto" : 0,
                   opacity: showOptionalServices[plan.name] ? 1 : 0,
                 }}
-                transition={{ duration: ANIM_DURATION }}
-                className="overflow-hidden"
+                transition={{
+                  duration: ANIM_DURATION,
+                  ease: "easeInOut",
+                }}
+                className="overflow-hidden will-change-transform"
+                style={{ transform: "translateZ(0)" }}
               >
                 <div
                   className={`${
@@ -242,16 +280,19 @@ export default function ServicesSection() {
               </div>
             </div>
 
-            <button
+            <motion.button
               onClick={() => scrollToSection("contact")}
               className={`w-full py-2.5 md:py-3 cursor-pointer rounded-xl text-base md:text-lg font-semibold transition-colors ${
                 plan.isLight
                   ? "bg-purple-700 text-white hover:bg-purple-800"
                   : "bg-white text-gray-900 hover:bg-gray-100"
               }`}
+              whileHover={{ y: -2 }}
+              whileTap={{ y: 1 }}
+              transition={{ duration: 0.2 }}
             >
               Get Started
-            </button>
+            </motion.button>
           </motion.div>
         ))}
       </div>

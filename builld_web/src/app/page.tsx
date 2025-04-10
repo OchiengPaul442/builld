@@ -11,43 +11,65 @@ import ServicesSection from "@/components/sections/services-section";
 import ContactUs from "@/components/sections/contact-us";
 import dynamic from "next/dynamic";
 
+// Throttle function to limit execution frequency
+function throttle<T extends (...args: any[]) => any>(
+  func: T,
+  delay: number
+): (...args: Parameters<T>) => void {
+  let lastCall = 0;
+  return (...args: Parameters<T>) => {
+    const now = Date.now();
+    if (now - lastCall >= delay) {
+      lastCall = now;
+      func(...args);
+    }
+  };
+}
+
 // Create a client-side only version of the Home content
 function HomeContent() {
   const { setActiveSection } = useScroll();
   const [splashComplete, setSplashComplete] = useState(false);
   const [hideHeader, setHideHeader] = useState(false);
-  // New state: once splash is complete, wait 0.5 sec then trigger hero reveal animations.
   const [startReveal, setStartReveal] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const prevScrollTop = useRef(0);
+  const scrollHandlerRef = useRef<(() => void) | null>(null);
 
-  // When splash screen completes, mark complete, set active section, and trigger reveal after 0.5 sec.
   const handleSplashComplete = useCallback(() => {
     setSplashComplete(true);
     setActiveSection("hero");
-    setTimeout(() => {
+    const timerId = setTimeout(() => {
       setStartReveal(true);
     }, 500);
+    return () => clearTimeout(timerId);
   }, [setActiveSection]);
 
-  // Listen to scroll events on the scrollable container.
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container) return;
 
-    const handleScroll = () => {
+    scrollHandlerRef.current = throttle(() => {
       const currentScrollTop = container.scrollTop;
-      // Hide header when scrolling down (past 100px); show when scrolling up.
+
       if (currentScrollTop > prevScrollTop.current && currentScrollTop > 100) {
         setHideHeader(true);
       } else if (currentScrollTop < prevScrollTop.current) {
         setHideHeader(false);
       }
-      prevScrollTop.current = currentScrollTop;
-    };
 
-    container.addEventListener("scroll", handleScroll, { passive: true });
-    return () => container.removeEventListener("scroll", handleScroll);
+      prevScrollTop.current = currentScrollTop;
+    }, 100);
+
+    container.addEventListener("scroll", scrollHandlerRef.current, {
+      passive: true,
+    });
+
+    return () => {
+      if (scrollHandlerRef.current && container) {
+        container.removeEventListener("scroll", scrollHandlerRef.current);
+      }
+    };
   }, []);
 
   return (
@@ -56,7 +78,7 @@ function HomeContent() {
       {splashComplete && <PageIndicator />}
       <div
         ref={scrollContainerRef}
-        className="h-screen overflow-y-auto scroll-smooth snap-y snap-mandatory"
+        className="h-screen overflow-y-auto scroll-smooth snap-y snap-mandatory overscroll-none"
       >
         <SplashScreen onComplete={handleSplashComplete} />
         <HeroAndAboutSections startReveal={startReveal} />
@@ -78,5 +100,9 @@ function HomeWrapper() {
 }
 
 // Use dynamic import with ssr disabled for the whole page
-const Home = dynamic(() => Promise.resolve(HomeWrapper), { ssr: false });
+const Home = dynamic(() => Promise.resolve(HomeWrapper), {
+  ssr: false,
+  loading: () => <div className="h-screen w-screen bg-black"></div>,
+});
+
 export default Home;
