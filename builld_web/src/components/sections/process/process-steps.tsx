@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
 import { IoChevronForwardOutline, IoChevronBackOutline } from "react-icons/io5";
 
@@ -62,17 +62,18 @@ export default function ProcessSteps() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const getBaseDisplacement = () => {
+  const getBaseDisplacement = useCallback(() => {
     const { DESKTOP, TABLET, MOBILE } = CARD_CONFIG.BASE_DISPLACEMENT;
     if (windowWidth < 768) return MOBILE;
     else if (windowWidth < 1024) return TABLET;
     else return DESKTOP;
-  };
+  }, [windowWidth]);
 
   const firstLevel = useMemo(
     () => ({ ...getBaseDisplacement(), zIndex: 40 }),
-    [windowWidth]
+    [getBaseDisplacement]
   );
+
   const secondLevel = useMemo(() => {
     const base = getBaseDisplacement();
     const { MULTIPLIER } = CARD_CONFIG;
@@ -83,14 +84,14 @@ export default function ProcessSteps() {
       zIndex: 50,
       scale: Math.max(0.8, base.scale - 0.05),
     };
-  }, [windowWidth]);
+  }, [getBaseDisplacement]);
 
-  const getCardSizing = () => {
+  const getCardSizing = useCallback(() => {
     const { DESKTOP, TABLET, MOBILE } = CARD_CONFIG.CARD_SIZES;
     if (windowWidth < 768) return MOBILE;
     else if (windowWidth < 1024) return TABLET;
     else return DESKTOP;
-  };
+  }, [windowWidth]);
 
   const cardSizing = getCardSizing();
 

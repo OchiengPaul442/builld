@@ -12,6 +12,14 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
 
+// Define the form data type
+interface FormData {
+  email: string;
+  phoneNumber: string;
+  businessStage: string;
+  challenge: string;
+}
+
 // Define validation schema using Yup
 const validationSchema = Yup.object().shape({
   email: Yup.string()
@@ -58,7 +66,7 @@ export default function ContactUs() {
     setValue,
     formState: { errors },
     reset,
-  } = useForm({
+  } = useForm<FormData>({
     resolver: yupResolver(validationSchema),
   });
 
@@ -69,7 +77,7 @@ export default function ContactUs() {
     }
   }, [inView, setActiveSection]);
 
-  const onSubmit = (data: any) => {
+  const onSubmit = () => {
     // Simulate async request
     setTimeout(() => {
       setFormSubmitted(true);

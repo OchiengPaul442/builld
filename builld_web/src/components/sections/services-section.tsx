@@ -26,15 +26,6 @@ interface Plan {
 const PLAN_PERIODS: PlanPeriod[] = ["monthly", "quarterly", "yearly"];
 const ANIM_DURATION = 0.3;
 
-const fadeUpVariant = {
-  hidden: { opacity: 0, y: 30 },
-  visible: (delay = 0) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: ANIM_DURATION, delay },
-  }),
-};
-
 export default function ServicesSection() {
   const { setActiveSection, scrollToSection } = useScroll();
   const [selectedPlan, setSelectedPlan] = useState<PlanPeriod>("monthly");
