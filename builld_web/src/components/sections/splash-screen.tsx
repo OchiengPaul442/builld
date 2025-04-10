@@ -123,14 +123,13 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
       transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
       style={{ transform: 'translateZ(0)' }}
     >
-      {isMobile ? (
-        // Static logo for mobile; centered using the same absolute positioning.
-        <div
-          className="absolute top-1/2 left-1/2"
-          style={{
-            transform: 'translate(-50%, -50%)',
-          }}
-        >
+      {/* Common centered container */}
+      <div
+        className="absolute top-1/2 left-1/2"
+        style={{ transform: 'translate(-50%, -50%)' }}
+      >
+        {isMobile ? (
+          // Static logo for mobile devices
           <Image
             src="/logo.png"
             alt="Build Logo"
@@ -139,30 +138,28 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
             priority
             className="w-auto h-auto"
           />
-        </div>
-      ) : (
-        // Floating animated logo for larger screens
-        <motion.div
-          className="absolute top-1/2 left-1/2"
-          style={{ transform: 'translate(-50%, -50%)' }}
-          animate={{ y: [0, -10, 0] }}
-          transition={{
-            duration: 2,
-            ease: 'easeInOut',
-            repeat: Infinity,
-            repeatType: 'mirror',
-          }}
-        >
-          <Image
-            src="/logo.png"
-            alt="Build Logo"
-            width={logoSize.width}
-            height={logoSize.height}
-            priority
-            className="w-auto h-auto"
-          />
-        </motion.div>
-      )}
+        ) : (
+          // Animated floating logo for larger screens
+          <motion.div
+            animate={{ y: [0, -10, 0] }}
+            transition={{
+              duration: 2,
+              ease: 'easeInOut',
+              repeat: Infinity,
+              repeatType: 'mirror',
+            }}
+          >
+            <Image
+              src="/logo.png"
+              alt="Build Logo"
+              width={logoSize.width}
+              height={logoSize.height}
+              priority
+              className="w-auto h-auto"
+            />
+          </motion.div>
+        )}
+      </div>
       <div className="absolute bottom-4 sm:bottom-6 md:bottom-8 left-0 right-0 px-6 sm:px-8 md:px-12">
         <div className="h-1 sm:h-1.5 w-full rounded bg-[#1a1a1a] relative">
           <motion.div
