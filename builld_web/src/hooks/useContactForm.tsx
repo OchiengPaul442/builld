@@ -39,9 +39,8 @@ export function useContactForm() {
   const [responseMessage, setResponseMessage] = useState<string>('');
 
   // Get API URL with fallback to ensure it's never undefined
-  const apiBaseUrl =
-    process.env.NEXT_PUBLIC_API_URL || 'https://api.builld.tech';
-  const contactEndpoint = `${apiBaseUrl}/api/contact`;
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || '';
+  const contactEndpoint = `${apiBaseUrl}/api/contact/`;
 
   // Use SWR mutation for making the API call
   const {
