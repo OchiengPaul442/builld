@@ -85,7 +85,7 @@ function HomeContent() {
       {splashComplete && <PageIndicator />}
       <div
         ref={scrollContainerRef}
-        className="h-screen overflow-y-auto scroll-smooth snap-y snap-mandatory overscroll-none"
+        className="h-screen overflow-y-auto scroll-smooth snap-none md:snap-y md:snap-mandatory overscroll-none"
       >
         <SplashScreen onComplete={handleSplashComplete} />
         <HeroAndAboutSections startReveal={startReveal} />
