@@ -24,17 +24,18 @@ export default function BackgroundAnimation({
   useEffect(() => {
     setMounted(true);
 
-    // Create cleanup function that properly captures the current ref
-    return () => {
-      // Fix the React hooks exhaustive-deps warning by capturing current ref
-      const currentLottieRef = lottieRef.current;
+    // Fix: Store the ref value at the time the cleanup function is created
+    const currentLottieRef = lottieRef.current;
 
+    // Cleanup function properly using the captured reference
+    return () => {
       if (currentLottieRef) {
         // Use optional chaining for safer method access
         currentLottieRef.pause?.();
         currentLottieRef.destroy?.();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!mounted) return null;
