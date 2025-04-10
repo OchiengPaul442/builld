@@ -72,7 +72,7 @@ export default function BackgroundAnimation({
       </motion.div>
 
       <div
-        className="absolute inset-0 z-[1] w-full h-full"
+        className="absolute hidden md:block inset-0 z-[1] w-full h-full"
         style={{
           backgroundColor: 'rgba(0, 0, 0, 0.5)',
           willChange: 'opacity',

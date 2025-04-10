@@ -133,10 +133,6 @@ export default function ContactUs() {
   const handleResetForm = () => {
     resetForm();
     reset();
-    showToast('Ready for a new message', {
-      type: 'info',
-      position: 'bottom-right',
-    });
   };
 
   return (

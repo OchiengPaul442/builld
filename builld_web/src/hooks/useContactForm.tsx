@@ -16,7 +16,11 @@ const postContactData = async (
   { arg }: { arg: ContactFormData }
 ) => {
   try {
-    const response = await axios.post(url, arg);
+    const response = await axios.post(url, arg, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
     return response.data;
   } catch (error) {
     console.error('Error posting contact data:', error);
@@ -42,10 +46,7 @@ export function useContactForm() {
   // Submit form data function
   const submitContactForm = async (data: ContactFormData) => {
     try {
-      // Log the URL to verify it's correct
       console.log(`Submitting to: ${contactEndpoint}`);
-
-      // Trigger the SWR mutation
       await trigger(data);
       setIsSuccess(true);
       return true;
