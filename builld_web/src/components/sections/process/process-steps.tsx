@@ -206,13 +206,7 @@ export default function ProcessSteps() {
     },
     [isFirstView, scrollLocked]
   );
-  const handleSkipAnimation = useCallback(() => {
-    setUserInteracted(true);
-    setScrollLocked(false);
-    setIsFirstView(false);
-    setAnimationPhase('finale');
-    setShowFinalMessage(true);
-  }, []);
+
   // Memoized calculations - stable order and dependencies
   const getBaseDisplacement = useCallback(() => {
     const { DESKTOP, TABLET, MOBILE } = CARD_CONFIG.BASE_DISPLACEMENT;
