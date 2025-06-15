@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { useScroll } from '@/context/scroll-context';
@@ -19,7 +19,6 @@ import { useToast } from '@/components/ui/toast';
 interface FormData {
   email: string;
   phoneNumber: string;
-  businessStage: string;
   challenge: string;
 }
 
@@ -44,7 +43,6 @@ const validationSchema = Yup.object().shape({
         return phone ? phone.isValid() : false;
       }
     ),
-  businessStage: Yup.string().required('Please select a business stage'),
   challenge: Yup.string().required('Please describe your biggest challenge'),
 });
 
@@ -64,6 +62,10 @@ export default function ContactUs() {
     threshold: 0.3,
     triggerOnce: false,
   });
+
+  // State for phone input to prevent hydration issues
+  const [phoneValue, setPhoneValue] = useState('');
+  const [isMounted, setIsMounted] = useState(false);
 
   // Use the contact form hook
   const {
@@ -92,6 +94,11 @@ export default function ContactUs() {
     resolver: yupResolver(validationSchema),
   });
 
+  // Handle mounting for hydration
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   // Cleanup timeouts
   useEffect(() => {
     return () => {
@@ -112,12 +119,11 @@ export default function ContactUs() {
       }
     }
   }, [inView, setActiveSection]);
-
   // Handle form submission using the contactForm hook
   const onSubmit = async (data: FormData) => {
     try {
+      console.log('Submitting form data:', data);
       const result = await submitContactForm(data);
-
       if (result.success) {
         // Show success toast with the API response message
         showToast(result.message || 'Message sent successfully!', {
@@ -126,14 +132,16 @@ export default function ContactUs() {
           description: "We'll get back to you as soon as possible.",
         });
         reset(); // Reset the form
+        setPhoneValue(''); // Reset phone input
       } else {
         // Show error toast with the error message
-        showToast(result.message, {
+        showToast(result.message || 'Failed to send message', {
           type: 'error',
           position: 'bottom-right',
         });
       }
-    } catch {
+    } catch (error) {
+      console.error('Form submission error:', error);
       // Fallback error message if something unexpected happens
       showToast('Failed to send message. Please try again later.', {
         type: 'error',
@@ -141,11 +149,11 @@ export default function ContactUs() {
       });
     }
   };
-
   // Reset the form and contact form state
   const handleResetForm = () => {
     resetForm();
     reset();
+    setPhoneValue('');
     showToast('Ready for a new message', {
       type: 'info',
       position: 'bottom-right',
@@ -191,10 +199,6 @@ export default function ContactUs() {
             <div>
               <h3 className="text-[#b0ff00] font-medium">Email</h3>
               <p>Contact@build.tech</p>
-            </div>
-            <div>
-              <h3 className="text-[#b0ff00] font-medium">Phone Number</h3>
-              <p>+254 793 462205</p>
             </div>
           </motion.div>
         </div>
@@ -276,83 +280,72 @@ export default function ContactUs() {
 
                 {/* Phone Field */}
                 <div>
+                  {' '}
                   <label
                     htmlFor="phoneNumber"
                     className="block text-sm font-medium text-gray-200 mb-1 sm:mb-2"
                   >
                     Phone Number
                   </label>
-                  <PhoneInput
-                    country="us"
-                    enableSearch={true}
-                    value=""
-                    onChange={(value: string) =>
-                      setValue('phoneNumber', value, { shouldValidate: true })
-                    }
-                    containerStyle={{
-                      width: '100%',
-                    }}
-                    inputStyle={{
-                      width: '100%',
-                      height: '50px',
-                      background: '#3f3f46',
-                      color: 'white',
-                      border: 'gray',
-                      borderRadius: '0.5rem',
-                      paddingLeft: '3rem',
-                      outline: 'none',
-                      fontSize: '0.875rem',
-                    }}
-                    buttonStyle={{
-                      background: '#3f3f46',
-                      color: 'white',
-                      border: '1px solid rgba(107, 114, 128, 1)',
-                      borderRadius: '0.5rem 0 0 0.5rem',
-                      outline: 'none',
-                    }}
-                    dropdownStyle={{
-                      background: 'white/10',
-                      color: 'black',
-                      border: 'gray',
-                      zIndex: 9999,
-                    }}
-                    searchStyle={{
-                      background: 'rgba(55, 65, 81, 0.5)',
-                      color: 'white',
-                      borderRadius: '0.25rem',
-                    }}
-                  />
+                  {isMounted ? (
+                    <PhoneInput
+                      country="us"
+                      enableSearch={true}
+                      value={phoneValue}
+                      onChange={(value: string) => {
+                        setPhoneValue(value);
+                        setValue('phoneNumber', value, {
+                          shouldValidate: true,
+                        });
+                      }}
+                      containerStyle={{
+                        width: '100%',
+                      }}
+                      inputStyle={{
+                        width: '100%',
+                        height: '50px',
+                        background: '#3f3f46',
+                        color: 'white',
+                        border: '1px solid #6b7280',
+                        borderRadius: '0.5rem',
+                        paddingLeft: '3rem',
+                        outline: 'none',
+                        fontSize: '0.875rem',
+                      }}
+                      buttonStyle={{
+                        background: '#3f3f46',
+                        color: 'white',
+                        border: '1px solid #6b7280',
+                        borderRadius: '0.5rem 0 0 0.5rem',
+                        outline: 'none',
+                      }}
+                      dropdownStyle={{
+                        background: '#374151',
+                        color: 'white',
+                        border: '1px solid #6b7280',
+                        zIndex: 9999,
+                      }}
+                      searchStyle={{
+                        background: '#374151',
+                        color: 'white',
+                        borderRadius: '0.25rem',
+                        border: '1px solid #6b7280',
+                      }}
+                    />
+                  ) : (
+                    <input
+                      type="tel"
+                      placeholder="Loading phone input..."
+                      className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-zinc-700/50
+                                 border border-zinc-600 rounded-lg text-white
+                                 focus:outline-none focus:ring-2 focus:ring-[#b0ff00]"
+                      style={{ height: '50px' }}
+                      disabled
+                    />
+                  )}
                   {errors.phoneNumber && (
                     <p className="text-red-500 text-xs mt-1">
                       {errors.phoneNumber.message}
-                    </p>
-                  )}
-                </div>
-
-                {/* Business Stage Field */}
-                <div className="md:col-span-2">
-                  <label
-                    htmlFor="businessStage"
-                    className="block text-sm font-medium text-gray-200 mb-1 sm:mb-2"
-                  >
-                    Business Stage
-                  </label>
-                  <select
-                    id="businessStage"
-                    style={{ height: '50px' }}
-                    {...register('businessStage')}
-                    className="w-full px-3 sm:px-4 py-2 sm:py-3
-                               bg-zinc-700/50 border border-zinc-600
-                               rounded-lg text-white
-                               focus:outline-none focus:ring-2 focus:ring-[#b0ff00]"
-                  >
-                    <option value="">Choose a Plan</option>
-                    <option value="LaunchPad">LaunchPad</option>
-                    <option value="Ignite">Ignite</option>
-                  </select>
-                  {errors.businessStage && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.businessStage.message}
                     </p>
                   )}
                 </div>

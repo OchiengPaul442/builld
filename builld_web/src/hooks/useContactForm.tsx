@@ -2,8 +2,15 @@ import { useState, useCallback } from 'react';
 import axios from 'axios';
 import useSWRMutation from 'swr/mutation';
 
-// Define the contact form data type
+// Define the contact form data type (for the form)
 export interface ContactFormData {
+  email: string;
+  phoneNumber: string;
+  challenge: string;
+}
+
+// Define the API data type (includes businessStage for backend)
+interface ContactFormApiData {
   email: string;
   phoneNumber: string;
   businessStage: string;
@@ -19,7 +26,7 @@ interface ContactFormResponse {
 // Create a fetcher function for SWR mutation
 const postContactData = async (
   url: string,
-  { arg }: { arg: ContactFormData }
+  { arg }: { arg: ContactFormApiData }
 ): Promise<ContactFormResponse> => {
   try {
     const response = await axios.post<ContactFormResponse>(url, arg, {
@@ -37,10 +44,11 @@ const postContactData = async (
 export function useContactForm() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [responseMessage, setResponseMessage] = useState<string>('');
-
-  // Get API URL with fallback to ensure it's never undefined
+  // Get API URL with fallback to local API route
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || '';
-  const contactEndpoint = `${apiBaseUrl}/api/contact`;
+  const contactEndpoint = apiBaseUrl
+    ? `${apiBaseUrl}/api/contact`
+    : '/api/contact';
 
   // Use SWR mutation for making the API call
   const {
@@ -48,13 +56,19 @@ export function useContactForm() {
     isMutating: isLoading,
     error,
     reset: resetSWR,
-  } = useSWRMutation(contactEndpoint, postContactData);
-  // Submit form data function with better error handling
+  } = useSWRMutation(contactEndpoint, postContactData); // Submit form data function with better error handling
   const submitContactForm = useCallback(
     async (data: ContactFormData) => {
       try {
         console.log(`Submitting to: ${contactEndpoint}`);
-        const response = await trigger(data);
+
+        // Add default businessStage since it was removed from the form but API still expects it
+        const dataWithBusinessStage = {
+          ...data,
+          businessStage: 'General', // Default value for hidden business stage field
+        };
+
+        const response = await trigger(dataWithBusinessStage);
 
         // Store response message to display in toast
         setResponseMessage(response.message);
