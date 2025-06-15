@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useScroll } from '@/context/scroll-context';
 import { useInView } from 'react-intersection-observer';
 
@@ -14,8 +14,6 @@ interface ServiceCard {
   textColor: string;
   features: string[];
 }
-
-const ANIM_DURATION = 0.3;
 
 export default function ServicesSection() {
   const { setActiveSection, scrollToSection } = useScroll();
