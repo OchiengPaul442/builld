@@ -190,8 +190,7 @@ export default function ContactUs() {
           >
             <div>
               <h3 className="text-[#b0ff00] font-medium">Email</h3>
-              <p>Sentomerojeremy@gmail.com</p>
-              <p>Jsentomero@gmail.com</p>
+              <p>Contact@build.tech</p>
             </div>
             <div>
               <h3 className="text-[#b0ff00] font-medium">Phone Number</h3>
@@ -264,8 +263,8 @@ export default function ContactUs() {
                     style={{ height: '50px' }}
                     {...register('email')}
                     placeholder="your@email.com"
-                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-zinc-700/50 
-                               border border-zinc-600 rounded-lg text-white 
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-zinc-700/50
+                               border border-zinc-600 rounded-lg text-white
                                focus:outline-none focus:ring-2 focus:ring-[#b0ff00]"
                   />
                   {errors.email && (
@@ -342,9 +341,9 @@ export default function ContactUs() {
                     id="businessStage"
                     style={{ height: '50px' }}
                     {...register('businessStage')}
-                    className="w-full px-3 sm:px-4 py-2 sm:py-3 
-                               bg-zinc-700/50 border border-zinc-600 
-                               rounded-lg text-white 
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3
+                               bg-zinc-700/50 border border-zinc-600
+                               rounded-lg text-white
                                focus:outline-none focus:ring-2 focus:ring-[#b0ff00]"
                   >
                     <option value="">Choose a Plan</option>
@@ -371,9 +370,9 @@ export default function ContactUs() {
                   id="challenge"
                   {...register('challenge')}
                   rows={4}
-                  className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-zinc-700/50 
-                             border border-zinc-600 rounded-lg text-white 
-                             focus:outline-none focus:ring-2 focus:ring-[#b0ff00] 
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-zinc-700/50
+                             border border-zinc-600 rounded-lg text-white
+                             focus:outline-none focus:ring-2 focus:ring-[#b0ff00]
                              resize-none"
                   placeholder="What's your biggest challenge right now?"
                 />
@@ -388,8 +387,8 @@ export default function ContactUs() {
               <motion.button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 sm:py-4 bg-[#9de600c4] 
-                           rounded-lg text-base sm:text-lg font-medium 
+                className="w-full py-3 sm:py-4 bg-[#9de600c4]
+                           rounded-lg text-base sm:text-lg font-medium
                            hover:scale-95 transition-all duration-200
                            disabled:opacity-70 disabled:cursor-not-allowed"
                 whileHover={{ scale: isLoading ? 1 : 1.02 }}
