@@ -115,11 +115,11 @@ const Toast: React.FC<ToastProps> = ({
   const startTimeRef = useRef<number | null>(null);
   const remainingTimeRef = useRef<number>(duration);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
   // Reset and start the progress timer
   const startTimer = useCallback(() => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
+      intervalRef.current = null;
     }
 
     startTimeRef.current = Date.now();
@@ -133,7 +133,10 @@ const Toast: React.FC<ToastProps> = ({
       setProgress(newProgress);
 
       if (newProgress >= 100 && onClose) {
-        clearInterval(intervalRef.current!);
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
+        }
         onClose();
       }
     }, 10);
@@ -159,11 +162,11 @@ const Toast: React.FC<ToastProps> = ({
     startTimeRef.current = Date.now() - (duration - remainingTimeRef.current);
     startTimer();
   }, [duration, startTimer]);
-
-  // Handle visibility changes
+  // Handle visibility changes with proper cleanup
   useEffect(() => {
     if (isVisible) {
       setProgress(0);
+      remainingTimeRef.current = duration;
       startTimer();
     } else {
       pauseTimer();
@@ -172,9 +175,10 @@ const Toast: React.FC<ToastProps> = ({
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
     };
-  }, [isVisible, startTimer, pauseTimer]);
+  }, [isVisible, duration, startTimer, pauseTimer]);
 
   // Handle pause/resume on hover
   useEffect(() => {
@@ -257,7 +261,7 @@ const Toast: React.FC<ToastProps> = ({
               </div>
               <button
                 onClick={onClose}
-                className="shrink-0 -mt-1 -mr-1 ml-auto h-8 w-8 flex items-center justify-center rounded-full 
+                className="shrink-0 -mt-1 -mr-1 ml-auto h-8 w-8 flex items-center justify-center rounded-full
                           hover:bg-white/10 focus:outline-none focus:bg-white/10 transition-colors"
                 aria-label="Close"
               >

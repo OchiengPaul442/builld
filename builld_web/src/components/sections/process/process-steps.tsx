@@ -53,22 +53,23 @@ export default function ProcessSteps() {
     typeof window !== 'undefined' ? window.innerWidth : 1200
   );
   const sectionRef = useRef<HTMLDivElement>(null);
-
-  // Compute in-view status (depends on window width)
+  // Compute in-view status with optimized calculations
   const isInView = useMemo(() => {
     if (!sectionRef.current) return false;
     const rect = sectionRef.current.getBoundingClientRect();
+    const threshold = window.innerHeight * 0.3;
     return (
-      rect.top <= window.innerHeight * 0.7 &&
-      rect.bottom >= window.innerHeight * 0.3
+      rect.top <= window.innerHeight - threshold && rect.bottom >= threshold
     );
-  }, [windowWidth]);
-
-  // Update window width on resize
+  }, []); // Remove windowWidth dependency as it's not critical for this calculation
+  // Update window width on resize with proper cleanup
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
   }, []);
 
   const getBaseDisplacement = useCallback(() => {
@@ -94,31 +95,41 @@ export default function ProcessSteps() {
       scale: Math.max(0.8, base.scale - 0.05),
     };
   }, [getBaseDisplacement]);
-
-  const getCardSizing = useCallback(() => {
+  // Optimized card sizing calculations
+  const cardSizing = useMemo(() => {
     const { DESKTOP, TABLET, MOBILE } = CARD_CONFIG.CARD_SIZES;
     if (windowWidth < 768) return MOBILE;
     else if (windowWidth < 1024) return TABLET;
     else return DESKTOP;
   }, [windowWidth]);
 
-  const cardSizing = getCardSizing();
+  // Memoize style configurations
+  const cardStyles = useMemo(() => {
+    const cardBackgroundColor =
+      windowWidth < 768
+        ? 'rgba(245, 245, 247, 0.2)'
+        : 'rgba(245, 245, 247, 0.1)';
+    const cardBorder =
+      windowWidth < 768
+        ? '1.5px solid rgba(245, 245, 247, 0.6)'
+        : '1.5px solid rgba(245, 245, 247, 0.4)';
+    const cardBoxShadow =
+      windowWidth < 768
+        ? '0px 0px 20px 0px rgba(255, 255, 255, 0.6) inset'
+        : '0px 0px 20px 0px rgba(255, 255, 255, 0.4) inset';
 
-  // Styling adjustments: ensure cards are fully opaque
-  const cardBackgroundColor =
-    windowWidth < 768 ? 'rgba(245, 245, 247, 0.2)' : 'rgba(245, 245, 247, 0.1)';
-  const cardBorder =
-    windowWidth < 768
-      ? '1.5px solid rgba(245, 245, 247, 0.6)'
-      : '1.5px solid rgba(245, 245, 247, 0.4)';
-  const cardBoxShadow =
-    windowWidth < 768
-      ? '0px 0px 20px 0px rgba(255, 255, 255, 0.6) inset'
-      : '0px 0px 20px 0px rgba(255, 255, 255, 0.4) inset';
+    const cardHeightPx = parseInt(cardSizing.height, 10) || 400;
+    const dynamicExtraPushY = -Math.ceil(cardHeightPx * 0.25);
+    const dynamicExtraRotate = -Math.ceil(cardHeightPx * 0.02);
 
-  const cardHeightPx = parseInt(cardSizing.height, 10) || 400;
-  const dynamicExtraPushY = -Math.ceil(cardHeightPx * 0.25);
-  const dynamicExtraRotate = -Math.ceil(cardHeightPx * 0.02);
+    return {
+      cardBackgroundColor,
+      cardBorder,
+      cardBoxShadow,
+      dynamicExtraPushY,
+      dynamicExtraRotate,
+    };
+  }, [windowWidth, cardSizing]);
 
   // Reset the carousel whenever the section enters or leaves view
   useEffect(() => {
@@ -134,77 +145,81 @@ export default function ProcessSteps() {
       setShowFinalMessage(false);
     }
   }, [activeIndex]);
-
-  // Compute card style transformations.
+  // Compute card style transformations with optimized access to dynamic values.
   // On mobile devices, only the active card is fully visible to prevent overlap.
-  const getCardStyles = (cardIndex: number) => {
-    if (windowWidth < 768) {
-      // Only show the active card at full opacity
-      return cardIndex === activeIndex - 1
-        ? { x: 0, y: 0, rotate: 0, opacity: 1, zIndex: 30, scale: 1 }
-        : { opacity: 0 };
-    }
-    // Larger screens use the layered animation
-    const { ACTIVE, BEHIND } = CARD_CONFIG;
-    if (activeIndex === 1) {
-      if (cardIndex === 0) return { ...ACTIVE, opacity: 1 };
-      if (cardIndex === 1)
-        return {
-          y: BEHIND.offsetY,
-          x: BEHIND.offsetX,
-          rotate: BEHIND.rotate,
-          zIndex: ACTIVE.zIndex - 10,
-          scale: 1,
-          opacity: 1,
-        };
-      if (cardIndex === 2)
-        return {
-          y: BEHIND.offsetY * 2,
-          x: BEHIND.offsetX * 2,
-          rotate: BEHIND.rotate * 2,
-          zIndex: ACTIVE.zIndex - 20,
-          scale: 1,
-          opacity: 1,
-        };
-    }
-    if (activeIndex === 2) {
-      if (cardIndex === 0) return { ...firstLevel, opacity: 1 };
-      if (cardIndex === 1) return { ...ACTIVE, opacity: 1 };
-      if (cardIndex === 2)
-        return {
-          y: BEHIND.offsetY,
-          x: BEHIND.offsetX,
-          rotate: BEHIND.rotate,
-          zIndex: ACTIVE.zIndex - 10,
-          scale: 1,
-          opacity: 1,
-        };
-    }
-    if (activeIndex === 3) {
-      if (cardIndex === 0)
-        return {
-          ...secondLevel,
-          y: secondLevel.y + dynamicExtraPushY,
-          rotate: secondLevel.rotate + dynamicExtraRotate,
-          opacity: 1,
-        };
-      if (cardIndex === 1)
-        return {
-          ...firstLevel,
-          y: firstLevel.y + dynamicExtraPushY,
-          rotate: firstLevel.rotate + dynamicExtraRotate,
-          opacity: 1,
-        };
-      if (cardIndex === 2)
-        return {
-          ...ACTIVE,
-          y: ACTIVE.y + dynamicExtraPushY,
-          rotate: ACTIVE.rotate + dynamicExtraRotate,
-          opacity: 1,
-        };
-    }
-    return { x: 0, y: 0, rotate: 0, opacity: 1, zIndex: 0, scale: 1 };
-  };
+  const getCardStyles = useCallback(
+    (cardIndex: number) => {
+      const { dynamicExtraPushY, dynamicExtraRotate } = cardStyles;
+
+      if (windowWidth < 768) {
+        // Only show the active card at full opacity
+        return cardIndex === activeIndex - 1
+          ? { x: 0, y: 0, rotate: 0, opacity: 1, zIndex: 30, scale: 1 }
+          : { opacity: 0 };
+      }
+      // Larger screens use the layered animation
+      const { ACTIVE, BEHIND } = CARD_CONFIG;
+      if (activeIndex === 1) {
+        if (cardIndex === 0) return { ...ACTIVE, opacity: 1 };
+        if (cardIndex === 1)
+          return {
+            y: BEHIND.offsetY,
+            x: BEHIND.offsetX,
+            rotate: BEHIND.rotate,
+            zIndex: ACTIVE.zIndex - 10,
+            scale: 1,
+            opacity: 1,
+          };
+        if (cardIndex === 2)
+          return {
+            y: BEHIND.offsetY * 2,
+            x: BEHIND.offsetX * 2,
+            rotate: BEHIND.rotate * 2,
+            zIndex: ACTIVE.zIndex - 20,
+            scale: 1,
+            opacity: 1,
+          };
+      }
+      if (activeIndex === 2) {
+        if (cardIndex === 0) return { ...firstLevel, opacity: 1 };
+        if (cardIndex === 1) return { ...ACTIVE, opacity: 1 };
+        if (cardIndex === 2)
+          return {
+            y: BEHIND.offsetY,
+            x: BEHIND.offsetX,
+            rotate: BEHIND.rotate,
+            zIndex: ACTIVE.zIndex - 10,
+            scale: 1,
+            opacity: 1,
+          };
+      }
+      if (activeIndex === 3) {
+        if (cardIndex === 0)
+          return {
+            ...secondLevel,
+            y: secondLevel.y + dynamicExtraPushY,
+            rotate: secondLevel.rotate + dynamicExtraRotate,
+            opacity: 1,
+          };
+        if (cardIndex === 1)
+          return {
+            ...firstLevel,
+            y: firstLevel.y + dynamicExtraPushY,
+            rotate: firstLevel.rotate + dynamicExtraRotate,
+            opacity: 1,
+          };
+        if (cardIndex === 2)
+          return {
+            ...ACTIVE,
+            y: ACTIVE.y + dynamicExtraPushY,
+            rotate: ACTIVE.rotate + dynamicExtraRotate,
+            opacity: 1,
+          };
+      }
+      return { x: 0, y: 0, rotate: 0, opacity: 1, zIndex: 0, scale: 1 };
+    },
+    [activeIndex, windowWidth, cardStyles, firstLevel, secondLevel]
+  );
 
   return (
     <div
@@ -255,14 +270,15 @@ export default function ProcessSteps() {
                   opacity: { duration: 0 },
                 }}
               >
+                {' '}
                 <div
                   className="w-full h-full flex flex-col justify-center items-center text-center rounded-[40px]"
                   style={{
                     padding: cardSizing.padding,
-                    backgroundColor: cardBackgroundColor,
-                    border: cardBorder,
+                    backgroundColor: cardStyles.cardBackgroundColor,
+                    border: cardStyles.cardBorder,
                     backdropFilter: 'blur(100px)',
-                    boxShadow: cardBoxShadow,
+                    boxShadow: cardStyles.cardBoxShadow,
                     transition:
                       'background-color 0.3s ease, border 0.3s ease, box-shadow 0.3s ease',
                   }}

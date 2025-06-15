@@ -9,6 +9,10 @@ import HeroAndAboutSections from '@/components/sections/hero-about-section';
 import ProcessSection from '@/components/sections/process/process-section';
 import ServicesSection from '@/components/sections/services-section';
 import ContactUs from '@/components/sections/contact-us';
+import {
+  PerformanceMonitor,
+  MemoryMonitor,
+} from '@/components/dev/performance-monitor';
 import dynamic from 'next/dynamic';
 
 const BackgroundAnimation = dynamic(
@@ -40,15 +44,30 @@ function HomeContent() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const prevScrollTop = useRef(0);
   const scrollHandlerRef = useRef<(() => void) | null>(null);
+  // Add ref to track splash timeout for cleanup
+  const splashTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleSplashComplete = useCallback(() => {
     setSplashComplete(true);
     setActiveSection('hero');
-    const timerId = setTimeout(() => {
+    // Clear any existing timeout before setting new one
+    if (splashTimeoutRef.current) {
+      clearTimeout(splashTimeoutRef.current);
+    }
+    splashTimeoutRef.current = setTimeout(() => {
       setStartReveal(true);
+      splashTimeoutRef.current = null; // Clear ref after execution
     }, 500);
-    return () => clearTimeout(timerId);
   }, [setActiveSection]);
+
+  // Cleanup effect for splash timeout
+  useEffect(() => {
+    return () => {
+      if (splashTimeoutRef.current) {
+        clearTimeout(splashTimeoutRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const container = scrollContainerRef.current;
@@ -78,19 +97,36 @@ function HomeContent() {
     });
 
     return () => {
-      if (scrollHandlerRef.current && container) {
+      if (container && scrollHandlerRef.current) {
         container.removeEventListener('scroll', scrollHandlerRef.current);
       }
+      // Clear the ref
+      scrollHandlerRef.current = null;
     };
-  }, []);
+  }, []); // Remove unnecessary dependencies to prevent re-adding listeners
 
   return (
     <div className="relative h-screen overflow-hidden">
+      {/* Development performance monitoring */}
+      {process.env.NODE_ENV === 'development' && (
+        <>
+          <PerformanceMonitor />
+          <MemoryMonitor />
+        </>
+      )}
+
+      {/* Background animation behind everything */}
+      <BackgroundAnimation />
+
       {splashComplete && <Header hideHeader={hideHeader} />}
       {splashComplete && <PageIndicator />}
       <div
         ref={scrollContainerRef}
-        className="h-screen overflow-y-auto scroll-smooth snap-none md:snap-y md:snap-mandatory overscroll-none"
+        className="relative h-screen overflow-y-auto scroll-smooth snap-none md:snap-y md:snap-mandatory overscroll-none"
+        style={{
+          zIndex: 1,
+          willChange: 'scroll-position',
+        }}
       >
         <SplashScreen onComplete={handleSplashComplete} />
         <HeroAndAboutSections startReveal={startReveal} />
@@ -98,8 +134,6 @@ function HomeContent() {
         <ServicesSection />
         <ContactUs />
       </div>
-
-      <BackgroundAnimation />
     </div>
   );
 }

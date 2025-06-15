@@ -24,11 +24,13 @@ export default function ProcessIntro() {
     typeof window !== 'undefined' ? window.innerWidth : 1200
   );
   const [ref, inView] = useInView({ threshold: 0.3 });
-
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
   }, []);
 
   const logoSize = useMemo(() => {

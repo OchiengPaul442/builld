@@ -25,7 +25,6 @@ export default function ProcessCard({
   const [windowWidth, setWindowWidth] = useState(
     typeof window !== 'undefined' ? window.innerWidth : 1200
   );
-
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);

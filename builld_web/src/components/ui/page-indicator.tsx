@@ -22,13 +22,16 @@ export default function PageIndicator() {
       if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
     };
   }, [activeSection]);
-
-  // Set visibility based on screen size.
+  // Set visibility based on screen size with proper cleanup
   useEffect(() => {
     const updateVisibility = () => setIsVisible(window.innerWidth >= 768);
-    updateVisibility();
-    window.addEventListener('resize', updateVisibility);
-    return () => window.removeEventListener('resize', updateVisibility);
+
+    if (typeof window !== 'undefined') {
+      updateVisibility();
+      window.addEventListener('resize', updateVisibility);
+
+      return () => window.removeEventListener('resize', updateVisibility);
+    }
   }, []);
 
   const sections: SectionType[] = [

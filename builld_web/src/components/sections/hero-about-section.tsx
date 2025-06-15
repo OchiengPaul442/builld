@@ -7,12 +7,6 @@ import { FaArrowRight } from 'react-icons/fa';
 import { useInView } from 'react-intersection-observer';
 import { useScroll, SectionType } from '../../context/scroll-context';
 
-import dynamic from 'next/dynamic';
-const BackgroundAnimation = dynamic(
-  () => import('../ui/background-animation'),
-  { ssr: false }
-);
-
 const ANIMATION_DURATION = 0.4;
 const STAGGER_DELAY = 0.1;
 
@@ -26,7 +20,7 @@ const staggerContainer = {
   visible: { transition: { delayChildren: 0, staggerChildren: STAGGER_DELAY } },
 };
 
-// Type-safe window width hook
+// Type-safe window width hook with proper cleanup
 const useWindowWidth = () => {
   const [width, setWidth] = useState(
     typeof window !== 'undefined' ? window.innerWidth : 1200
@@ -40,15 +34,20 @@ const useWindowWidth = () => {
 
       timerRef.current = setTimeout(() => {
         setWidth(window.innerWidth);
+        timerRef.current = null;
       }, 100);
     };
 
-    window.addEventListener('resize', handleResize);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', handleResize);
 
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        if (timerRef.current) {
+          clearTimeout(timerRef.current);
+        }
+      };
+    }
   }, []);
 
   return width;
@@ -75,7 +74,6 @@ export default function HeroAndAboutSections({
   });
 
   const prevSectionRef = useRef<string | null>(null);
-
   useEffect(() => {
     let newSection: SectionType | null = null;
     if (heroInView) {
@@ -127,12 +125,12 @@ export default function HeroAndAboutSections({
 
   return (
     <>
+      {' '}
       <section
         id="section-hero"
         ref={heroRef}
         className="section-fullscreen z-10 snap-section gradient-bg flex items-center justify-center relative"
       >
-        <BackgroundAnimation />
         <div className="max-w-7xl w-full px-4 sm:px-6 md:px-10 mx-auto relative z-10">
           <div className="flex flex-col items-center text-center">
             <motion.div
@@ -141,10 +139,12 @@ export default function HeroAndAboutSections({
               animate={startReveal ? 'visible' : 'hidden'}
               variants={staggerContainer}
             >
+              {' '}
               <motion.h1
                 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-normal tracking-tight mb-4 sm:mb-6"
                 variants={staggerContainer}
               >
+                {' '}
                 <motion.div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4 lg:gap-5">
                   <motion.span variants={fadeUpVariant}>Build</motion.span>
                   <motion.div
@@ -153,27 +153,38 @@ export default function HeroAndAboutSections({
                       visible: {
                         opacity: 1,
                         scale: 1,
-                        transition: { duration: ANIMATION_DURATION },
+                        transition: {
+                          duration: ANIMATION_DURATION,
+                          delay: 0.1,
+                        },
                       },
                     }}
                     className="relative inline-flex"
                     style={{ transform: 'translateZ(0)' }}
                   >
+                    {' '}
                     <div
-                      className="flex items-center w-12 h-12 md:w-20 md:h-20 justify-center rounded-2xl md:rounded-3xl"
+                      className="flex items-center w-12 h-12 md:w-20 md:h-20 justify-center rounded-2xl md:rounded-3xl border border-white/10"
                       style={{
-                        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
                         backdropFilter: 'blur(66.67px)',
                         transform: 'translateZ(0)',
+                        minWidth: '48px',
+                        minHeight: '48px',
                       }}
                     >
+                      {' '}
                       <Image
                         src="/images/L.png"
                         alt="Logo"
                         width={logoSize.width}
                         height={logoSize.height}
-                        className="object-contain p-2"
+                        className="object-contain"
                         priority
+                        style={{
+                          maxWidth: '100%',
+                          maxHeight: '100%',
+                        }}
                       />
                     </div>
                   </motion.div>
@@ -229,22 +240,24 @@ export default function HeroAndAboutSections({
           </div>
         </div>
       </section>
-
       <section
         id="section-about"
         ref={aboutRef}
         className="relative section-fullscreen z-30 snap-section min-h-screen w-full overflow-hidden"
       >
+        {' '}
         <motion.div
-          className="absolute inset-0 z-[2] w-full h-full"
+          className="absolute inset-0 w-full h-full pointer-events-none"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
           style={{
-            backdropFilter: 'blur(100px)]',
+            zIndex: 2,
+            backdropFilter: 'blur(100px)',
             backgroundColor: 'rgba(255, 255, 255, 0.1)',
             willChange: 'opacity',
-            transform: 'translateZ(0)',
+            transform: 'translate3d(0, 0, 0)',
+            backfaceVisibility: 'hidden',
           }}
         />
         <div className="max-w-7xl w-full px-4 sm:px-6 md:px-0 mx-auto relative z-10 py-10 sm:py-16 md:py-20">

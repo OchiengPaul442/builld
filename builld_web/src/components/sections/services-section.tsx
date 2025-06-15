@@ -132,16 +132,19 @@ export default function ServicesSection() {
       ref={ref}
       className="section-fullscreen snap-section z-30 flex flex-col items-center justify-center py-12 px-4 md:px-6 overflow-y-auto will-change-transform"
     >
+      {' '}
       <motion.div
-        className="absolute inset-0 z-[2] w-full h-full"
+        className="absolute inset-0 w-full h-full pointer-events-none"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
         style={{
-          backdropFilter: 'blur(100px)]',
+          zIndex: 2,
+          backdropFilter: 'blur(100px)',
           backgroundColor: 'rgba(255, 255, 255, 0.1)',
           willChange: 'opacity',
-          transform: 'translateZ(0)',
+          transform: 'translate3d(0, 0, 0)',
+          backfaceVisibility: 'hidden',
         }}
       />
       <div className="relative z-10 text-center mb-6 md:mb-8 max-w-7xl w-full mx-auto">
@@ -152,7 +155,6 @@ export default function ServicesSection() {
           Flexible solutions for your digital growth
         </p>
       </div>
-
       <div className="relative z-10 flex space-x-2 bg-white/10 p-1.5 rounded-full mb-6">
         {PLAN_PERIODS.map(period => (
           <button
@@ -168,7 +170,6 @@ export default function ServicesSection() {
           </button>
         ))}
       </div>
-
       <div className="relative z-10 grid md:grid-cols-2 gap-6 md:gap-8 max-w-7xl w-full mx-auto">
         {plans.map(plan => (
           <motion.div

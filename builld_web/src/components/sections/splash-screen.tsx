@@ -42,18 +42,24 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
     }
     return false;
   }, []);
-
-  // Cleanup on unmount
+  // Cleanup on unmount with proper null checks
   useEffect(() => {
     return () => {
-      if (animationFrameRef.current)
+      if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      if (exitTimeoutRef.current) clearTimeout(exitTimeoutRef.current);
+        animationFrameRef.current = null;
+      }
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+      if (exitTimeoutRef.current) {
+        clearTimeout(exitTimeoutRef.current);
+        exitTimeoutRef.current = null;
+      }
     };
   }, []);
-
-  // Progress animation with cleanup
+  // Progress animation with proper cleanup
   useEffect(() => {
     if (currentMilestone >= milestones.length - 1) return;
 
@@ -81,24 +87,32 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
     );
 
     return () => {
-      if (animationFrameRef.current)
+      if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        animationFrameRef.current = null;
+      }
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
     };
-  }, [currentMilestone, milestones]);
-
-  // Handle exit animation and onComplete callback
+  }, [currentMilestone, milestones, duration]);
+  // Handle exit animation and onComplete callback with proper cleanup
   useEffect(() => {
     if (currentMilestone === milestones.length - 1) {
       exitTimeoutRef.current = setTimeout(() => {
         setIsExiting(true);
         exitTimeoutRef.current = setTimeout(() => {
           if (onComplete) onComplete();
+          exitTimeoutRef.current = null;
         }, 800);
       }, 500);
 
       return () => {
-        if (exitTimeoutRef.current) clearTimeout(exitTimeoutRef.current);
+        if (exitTimeoutRef.current) {
+          clearTimeout(exitTimeoutRef.current);
+          exitTimeoutRef.current = null;
+        }
       };
     }
   }, [currentMilestone, milestones.length, onComplete]);

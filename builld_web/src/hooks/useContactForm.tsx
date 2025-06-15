@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import axios from 'axios';
 import useSWRMutation from 'swr/mutation';
 
@@ -49,43 +49,51 @@ export function useContactForm() {
     error,
     reset: resetSWR,
   } = useSWRMutation(contactEndpoint, postContactData);
+  // Submit form data function with better error handling
+  const submitContactForm = useCallback(
+    async (data: ContactFormData) => {
+      try {
+        console.log(`Submitting to: ${contactEndpoint}`);
+        const response = await trigger(data);
 
-  // Submit form data function
-  const submitContactForm = async (data: ContactFormData) => {
-    try {
-      console.log(`Submitting to: ${contactEndpoint}`);
-      const response = await trigger(data);
+        // Store response message to display in toast
+        setResponseMessage(response.message);
+        setIsSuccess(true);
+        return {
+          success: true,
+          message: response.message,
+        };
+      } catch (err) {
+        console.error('Contact form submission failed:', err);
+        setIsSuccess(false);
 
-      // Store response message to display in toast
-      setResponseMessage(response.message);
-      setIsSuccess(true);
-      return {
-        success: true,
-        message: response.message,
-      };
-    } catch (err) {
-      console.error('Contact form submission failed:', err);
-      setIsSuccess(false);
+        // Extract error message if available
+        let errorMessage = 'Failed to send message. Please try again.';
+        if (axios.isAxiosError(err)) {
+          if (err.response?.data?.message) {
+            errorMessage = err.response.data.message;
+          } else if (err.message) {
+            errorMessage = `Network error: ${err.message}`;
+          }
+        } else if (err instanceof Error) {
+          errorMessage = err.message;
+        }
 
-      // Extract error message if available
-      let errorMessage = 'Failed to send message. Please try again.';
-      if (axios.isAxiosError(err) && err.response?.data?.message) {
-        errorMessage = err.response.data.message;
+        setResponseMessage(errorMessage);
+        return {
+          success: false,
+          message: errorMessage,
+        };
       }
-
-      return {
-        success: false,
-        message: errorMessage,
-      };
-    }
-  };
-
+    },
+    [trigger, contactEndpoint]
+  );
   // Reset the form state
-  const resetForm = () => {
+  const resetForm = useCallback(() => {
     setIsSuccess(false);
     setResponseMessage('');
     resetSWR();
-  };
+  }, [resetSWR]);
 
   return {
     submitContactForm,

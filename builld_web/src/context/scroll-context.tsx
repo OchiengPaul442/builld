@@ -76,28 +76,29 @@ export const ScrollProvider = ({ children }: { children: React.ReactNode }) => {
       manualSectionUpdateRef.current = false;
     }
   }, []);
-
-  // Simplified throttled functions
+  // Simplified throttled functions with stable references
   const throttledUpdateActiveSection = useCallback(
     (section: SectionType) => {
-      if (section === activeSection || manualSectionUpdateRef.current) return;
-      setActiveSection(section);
+      if (manualSectionUpdateRef.current) return;
+      setActiveSection(prevSection => {
+        if (prevSection === section) return prevSection;
+        return section;
+      });
     },
-    [activeSection]
+    [] // Remove activeSection dependency to prevent infinite loops
   );
-
   const throttledUpdateProcessCardStep = useCallback(() => {
-    if (activeSection === 'process') {
-      const processSection = document.getElementById('section-process');
-      if (processSection) {
-        const { top, height } = processSection.getBoundingClientRect();
-        const progress = Math.max(0, Math.min(1, -top / height));
-        const newStep = Math.min(4, Math.floor(progress * 5));
-        setProcessCardStep(newStep);
-      }
+    const processSection = document.getElementById('section-process');
+    if (processSection) {
+      const { top, height } = processSection.getBoundingClientRect();
+      const progress = Math.max(0, Math.min(1, -top / height));
+      const newStep = Math.min(4, Math.floor(progress * 5));
+      setProcessCardStep(prevStep => {
+        if (prevStep === newStep) return prevStep;
+        return newStep;
+      });
     }
-  }, [activeSection]);
-
+  }, []); // Remove activeSection dependency
   useEffect(() => {
     const handleScroll = () => {
       if (isScrolling.current || manualSectionUpdateRef.current) return;
@@ -142,8 +143,7 @@ export const ScrollProvider = ({ children }: { children: React.ReactNode }) => {
           maxVisibleSection = section;
         }
       }
-
-      if (maxVisibleSection && maxVisibleSection !== activeSection) {
+      if (maxVisibleSection) {
         throttledUpdateActiveSection(maxVisibleSection);
       }
 
@@ -155,14 +155,11 @@ export const ScrollProvider = ({ children }: { children: React.ReactNode }) => {
     const throttledHandleScroll = throttle(handleScroll, 100);
 
     window.addEventListener('scroll', throttledHandleScroll, { passive: true });
+
     return () => {
       window.removeEventListener('scroll', throttledHandleScroll);
     };
-  }, [
-    activeSection,
-    throttledUpdateActiveSection,
-    throttledUpdateProcessCardStep,
-  ]);
+  }, [throttledUpdateActiveSection, throttledUpdateProcessCardStep]); // Remove activeSection dependency to prevent infinite re-registration
 
   return (
     <ScrollContext.Provider

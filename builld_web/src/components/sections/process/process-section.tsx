@@ -38,21 +38,24 @@ export default function ProcessSection() {
 
   return (
     <>
+      {' '}
       <section
         ref={mainSectionRef}
         id="section-process"
         className="relative section-fullscreen z-30 snap-section min-h-screen w-full flex items-center will-change-transform"
       >
         <motion.div
-          className="absolute inset-0 z-[2] w-full h-full"
+          className="absolute inset-0 w-full h-full pointer-events-none"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
           style={{
+            zIndex: 2,
             backdropFilter: 'blur(100px)',
             backgroundColor: 'rgba(255, 255, 255, 0.1)',
             willChange: 'opacity',
-            transform: 'translateZ(0)',
+            transform: 'translate3d(0, 0, 0)',
+            backfaceVisibility: 'hidden',
           }}
         />
         <div className="max-w-7xl w-full mx-auto z-[5] relative">
@@ -65,15 +68,17 @@ export default function ProcessSection() {
         className="relative z-30 section-fullscreen snap-section min-h-screen w-full flex items-center justify-center will-change-transform"
       >
         <motion.div
-          className="absolute inset-0 z-[2] w-full h-full"
+          className="absolute inset-0 w-full h-full pointer-events-none"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
           style={{
+            zIndex: 2,
             backdropFilter: 'blur(100px)',
             backgroundColor: 'rgba(255, 255, 255, 0.1)',
             willChange: 'opacity',
-            transform: 'translateZ(0)',
+            transform: 'translate3d(0, 0, 0)',
+            backfaceVisibility: 'hidden',
           }}
         />
         <div className="max-w-7xl w-full mx-auto z-[5] relative">

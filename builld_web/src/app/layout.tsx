@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Lexend } from 'next/font/google';
 import { ToastProvider } from '@/components/ui/toast';
+import ErrorBoundary from '@/components/ui/error-boundary';
 import './globals.css';
 import { Analytics } from '@vercel/analytics/react';
 
@@ -37,10 +38,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={lexend.className}>
       <body>
-        <ToastProvider>
-          {children}
-          <Analytics />
-        </ToastProvider>
+        <ErrorBoundary>
+          <ToastProvider>
+            {children}
+            <Analytics />
+          </ToastProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );
