@@ -122,20 +122,11 @@ export default function ProcessSteps() {
     if (windowWidth < 1024) return TABLET;
     return DESKTOP;
   }, [windowWidth]);
-
   const cardStyles = useMemo(() => {
-    const cardBackgroundColor =
-      windowWidth < 768
-        ? 'rgba(245, 245, 247, 0.2)'
-        : 'rgba(245, 245, 247, 0.1)';
-    const cardBorder =
-      windowWidth < 768
-        ? '1.5px solid rgba(245, 245, 247, 0.6)'
-        : '1.5px solid rgba(245, 245, 247, 0.4)';
-    const cardBoxShadow =
-      windowWidth < 768
-        ? '0px 0px 20px 0px rgba(255, 255, 255, 0.6) inset'
-        : '0px 0px 20px 0px rgba(255, 255, 255, 0.4) inset';
+    // Fixed background color with no transparency
+    const cardBackgroundColor = '#333434';
+    const cardBorder = '1.5px solid rgba(245, 245, 247, 0.4)';
+    const cardBoxShadow = '0px 0px 20px 0px rgba(255, 255, 255, 0.1) inset';
 
     const cardHeightPx = parseInt(cardSizing.height, 10) || 400;
     const dynamicExtraPushY = -Math.ceil(cardHeightPx * 0.25);
@@ -148,7 +139,7 @@ export default function ProcessSteps() {
       dynamicExtraPushY,
       dynamicExtraRotate,
     };
-  }, [windowWidth, cardSizing]);
+  }, [cardSizing]);
 
   const firstLevel = useMemo(
     () => ({
@@ -168,8 +159,7 @@ export default function ProcessSteps() {
       zIndex: 50,
       scale: Math.max(0.8, base.scale - 0.05),
     };
-  }, [getBaseDisplacement]);
-  // Card positioning logic
+  }, [getBaseDisplacement]); // Card positioning logic - Fixed background color, no opacity effects
   const getCardStyles = useCallback(
     (cardIndex: number) => {
       const { dynamicExtraPushY, dynamicExtraRotate } = cardStyles;
@@ -177,15 +167,26 @@ export default function ProcessSteps() {
       if (windowWidth < 768) {
         // Mobile: only show active card
         return cardIndex === activeIndex - 1
-          ? { x: 0, y: 0, rotate: 0, opacity: 1, zIndex: 30, scale: 1 }
-          : { opacity: 0 };
+          ? { x: 0, y: 0, rotate: 0, zIndex: 30, scale: 1 }
+          : { x: -1000, y: 0, rotate: 0, zIndex: 0, scale: 1 }; // Move off-screen instead of opacity
       }
 
-      // Desktop/tablet layered animation
+      // Desktop/tablet layered animation - no opacity effects
       const { ACTIVE, BEHIND } = CARD_CONFIG;
 
+      // Initial state: show all cards
+      if (activeIndex === 0) {
+        return {
+          x: 0,
+          y: 0,
+          rotate: cardIndex * -8,
+          zIndex: 30 - cardIndex * 10,
+          scale: 1,
+        };
+      }
+
       if (activeIndex === 1) {
-        if (cardIndex === 0) return { ...ACTIVE, opacity: 1 };
+        if (cardIndex === 0) return { ...ACTIVE };
         if (cardIndex === 1)
           return {
             y: BEHIND.offsetY,
@@ -193,7 +194,6 @@ export default function ProcessSteps() {
             rotate: BEHIND.rotate,
             zIndex: ACTIVE.zIndex - 10,
             scale: 1,
-            opacity: 1,
           };
         if (cardIndex === 2)
           return {
@@ -202,13 +202,12 @@ export default function ProcessSteps() {
             rotate: BEHIND.rotate * 2,
             zIndex: ACTIVE.zIndex - 20,
             scale: 1,
-            opacity: 1,
           };
       }
 
       if (activeIndex === 2) {
-        if (cardIndex === 0) return { ...firstLevel, opacity: 1 };
-        if (cardIndex === 1) return { ...ACTIVE, opacity: 1 };
+        if (cardIndex === 0) return firstLevel;
+        if (cardIndex === 1) return ACTIVE;
         if (cardIndex === 2)
           return {
             y: BEHIND.offsetY,
@@ -216,7 +215,6 @@ export default function ProcessSteps() {
             rotate: BEHIND.rotate,
             zIndex: ACTIVE.zIndex - 10,
             scale: 1,
-            opacity: 1,
           };
       }
 
@@ -226,25 +224,22 @@ export default function ProcessSteps() {
             ...secondLevel,
             y: secondLevel.y + dynamicExtraPushY,
             rotate: secondLevel.rotate + dynamicExtraRotate,
-            opacity: 1,
           };
         if (cardIndex === 1)
           return {
             ...firstLevel,
             y: firstLevel.y + dynamicExtraPushY,
             rotate: firstLevel.rotate + dynamicExtraRotate,
-            opacity: 1,
           };
         if (cardIndex === 2)
           return {
             ...ACTIVE,
             y: ACTIVE.y + dynamicExtraPushY,
             rotate: ACTIVE.rotate + dynamicExtraRotate,
-            opacity: 1,
           };
       }
 
-      return { x: 0, y: 0, rotate: 0, opacity: 1, zIndex: 0, scale: 1 };
+      return { x: 0, y: 0, rotate: 0, zIndex: 0, scale: 1 };
     },
     [activeIndex, windowWidth, cardStyles, firstLevel, secondLevel]
   );
@@ -338,6 +333,7 @@ export default function ProcessSteps() {
           className="relative"
           style={{ width: cardSizing.width, height: cardSizing.height }}
         >
+          {' '}
           {processCards.map((card, index) => {
             const styles = getCardStyles(index);
             return (
@@ -350,12 +346,17 @@ export default function ProcessSteps() {
                   zIndex: styles.zIndex,
                   transformOrigin: 'center center',
                 }}
+                initial={{
+                  x: 0,
+                  y: 0,
+                  rotate: index * -8,
+                  scale: 1,
+                }}
                 animate={styles}
                 transition={{
                   type: 'spring',
                   stiffness: 75,
                   damping: 22,
-                  opacity: { duration: 0.4 },
                   scale: { duration: 0.5 },
                   rotate: { duration: 0.6 },
                   x: { duration: 0.5 },
@@ -374,10 +375,7 @@ export default function ProcessSteps() {
                     padding: cardSizing.padding,
                     backgroundColor: cardStyles.cardBackgroundColor,
                     border: cardStyles.cardBorder,
-                    backdropFilter: 'blur(100px)',
                     boxShadow: cardStyles.cardBoxShadow,
-                    transition:
-                      'background-color 0.3s ease, border 0.3s ease, box-shadow 0.3s ease',
                   }}
                 >
                   <motion.h3
@@ -419,7 +417,7 @@ export default function ProcessSteps() {
               opacity: { duration: 0.8 },
               scale: { duration: 1, delay: 0.2 },
             }}
-            className="absolute bottom-32 sm:bottom-44 md:bottom-48 z-50 flex flex-col items-center"
+            className="absolute bottom-2 sm:bottom-4 md:bottom-6 z-50 flex flex-col items-center"
           >
             {/* Animated Background Glow */}
             <motion.div
@@ -434,7 +432,7 @@ export default function ProcessSteps() {
                 ease: 'easeOut',
               }}
               className="absolute inset-0 w-full h-full bg-[#b0ff00] rounded-full blur-3xl -z-10"
-              style={{ transform: 'scale(2)' }}
+              style={{ transform: 'scale(1.5)', opacity: 0.05 }}
             />
 
             {/* Main Text with Staggered Animation */}
