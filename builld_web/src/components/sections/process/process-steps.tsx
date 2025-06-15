@@ -54,12 +54,80 @@ export default function ProcessSteps() {
     'intro' | 'cards' | 'finale'
   >('intro');
   const [showFinalMessage, setShowFinalMessage] = useState(false);
-
+  // New states for enhanced user experience
+  const [isFirstView, setIsFirstView] = useState(true);
+  const [scrollLocked, setScrollLocked] = useState(false);
+  const [userInteracted, setUserInteracted] = useState(false);
   // Intersection observer for section visibility
   const [ref, inView] = useInView({
-    threshold: 0.1,
+    threshold: 0.3, // Increased threshold for better timing
     triggerOnce: false,
-  }); // Handle mounting and window resize - single effect to prevent conflicts
+  });
+  // Scroll lock functionality
+  useEffect(() => {
+    if (scrollLocked) {
+      // Get current scroll position to maintain it
+      const scrollY = window.scrollY;
+
+      // Prevent scrolling on multiple levels
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+
+      // Prevent wheel events
+      const preventScroll = (e: WheelEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+      };
+
+      // Prevent keyboard scrolling
+      const preventKeyScroll = (e: KeyboardEvent) => {
+        if (
+          [
+            'ArrowUp',
+            'ArrowDown',
+            'PageUp',
+            'PageDown',
+            'Home',
+            'End',
+            ' ',
+          ].includes(e.key)
+        ) {
+          e.preventDefault();
+        }
+      };
+
+      // Prevent touch scrolling
+      const preventTouchScroll = (e: TouchEvent) => {
+        if (e.touches.length > 1) return;
+        e.preventDefault();
+      };
+
+      document.addEventListener('wheel', preventScroll, { passive: false });
+      document.addEventListener('keydown', preventKeyScroll);
+      document.addEventListener('touchmove', preventTouchScroll, {
+        passive: false,
+      });
+
+      return () => {
+        document.removeEventListener('wheel', preventScroll);
+        document.removeEventListener('keydown', preventKeyScroll);
+        document.removeEventListener('touchmove', preventTouchScroll);
+      };
+    } else {
+      // Re-enable scrolling and restore position
+      const scrollY = document.body.style.top;
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+      }
+    }
+  }, [scrollLocked]); // Handle mounting and window resize - single effect to prevent conflicts
   useEffect(() => {
     setIsMounted(true);
 
@@ -71,24 +139,34 @@ export default function ProcessSteps() {
       return () => window.removeEventListener('resize', handleResize);
     }
   }, []);
-
   // Handle section visibility and reset state
   useEffect(() => {
     if (!isMounted) return;
-
     if (!inView) {
       setActiveIndex(1);
       setAnimationPhase('intro');
       setShowFinalMessage(false);
+      setScrollLocked(false);
+    } else if (isFirstView) {
+      // First time viewing - lock scroll and show experience
+      setScrollLocked(true);
+
+      // Start animation after brief delay
+      const timer = setTimeout(() => {
+        setAnimationPhase('cards');
+      }, 1000); // Brief delay before starting
+
+      return () => {
+        clearTimeout(timer);
+      };
     } else {
-      // Start intro phase when section comes into view
+      // Subsequent views - normal behavior
       const timer = setTimeout(() => {
         setAnimationPhase('cards');
       }, 500);
       return () => clearTimeout(timer);
     }
-  }, [inView, isMounted]);
-
+  }, [inView, isMounted, isFirstView]);
   // Auto-progress through cards
   useEffect(() => {
     if (!isMounted || !inView || animationPhase !== 'cards') return;
@@ -100,14 +178,41 @@ export default function ProcessSteps() {
         } else {
           // Move to finale after last card
           setAnimationPhase('finale');
-          setShowFinalMessage(true);
+          setShowFinalMessage(true); // Unlock scroll after animation completes (first time only)
+          if (isFirstView) {
+            setTimeout(() => {
+              setScrollLocked(false);
+              setIsFirstView(false);
+            }, 1500); // Reduced from 2000ms
+          }
+
           return prev;
         }
       });
-    }, 3000);
+    }, 2500); // Reduced from 3000ms for snappier experience
 
     return () => clearInterval(interval);
-  }, [inView, animationPhase, isMounted]);
+  }, [inView, animationPhase, isMounted, isFirstView]);
+
+  // Manual control functions
+  const handleCardClick = useCallback(
+    (index: number) => {
+      setUserInteracted(true);
+      setActiveIndex(index + 1); // If user interacts, unlock scroll immediately
+      if (isFirstView && scrollLocked) {
+        setScrollLocked(false);
+        setIsFirstView(false);
+      }
+    },
+    [isFirstView, scrollLocked]
+  );
+  const handleSkipAnimation = useCallback(() => {
+    setUserInteracted(true);
+    setScrollLocked(false);
+    setIsFirstView(false);
+    setAnimationPhase('finale');
+    setShowFinalMessage(true);
+  }, []);
   // Memoized calculations - stable order and dependencies
   const getBaseDisplacement = useCallback(() => {
     const { DESKTOP, TABLET, MOBILE } = CARD_CONFIG.BASE_DISPLACEMENT;
@@ -314,14 +419,14 @@ export default function ProcessSteps() {
               }}
             />
           </motion.div>
-        )}
-        {/* Instructions */}
-        {isMounted && animationPhase === 'cards' && (
+        )}{' '}
+        {/* Simple Instructions */}
+        {isMounted && animationPhase === 'cards' && !userInteracted && (
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1 }}
-            className="text-xs text-white/60 mt-2 max-w-20"
+            transition={{ delay: 1.5 }}
+            className="text-xs text-white/50 mt-3 max-w-16 text-center"
           >
             Auto-playing
           </motion.p>
@@ -339,7 +444,7 @@ export default function ProcessSteps() {
             return (
               <motion.div
                 key={card.id}
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer"
                 style={{
                   width: cardSizing.width,
                   height: cardSizing.height,
@@ -365,8 +470,10 @@ export default function ProcessSteps() {
                 whileHover={
                   index === activeIndex - 1
                     ? { scale: 1.02, transition: { duration: 0.2 } }
-                    : {}
+                    : { scale: 1.01, transition: { duration: 0.2 } }
                 }
+                whileTap={{ scale: 0.98 }}
+                onClick={() => handleCardClick(index)}
               >
                 {' '}
                 <div
@@ -434,7 +541,6 @@ export default function ProcessSteps() {
               className="absolute inset-0 w-full h-full bg-[#b0ff00] rounded-full blur-3xl -z-10"
               style={{ transform: 'scale(1.5)', opacity: 0.05 }}
             />
-
             {/* Main Text with Staggered Animation */}
             <div className="relative overflow-hidden">
               <motion.h2
@@ -487,7 +593,6 @@ export default function ProcessSteps() {
                 </motion.span>
               </motion.h2>
             </div>
-
             {/* Floating Particles Effect */}
             {[...Array(6)].map((_, i) => (
               <motion.div
@@ -518,7 +623,6 @@ export default function ProcessSteps() {
                 }}
               />
             ))}
-
             {/* Subtle Subtitle */}
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -528,7 +632,6 @@ export default function ProcessSteps() {
             >
               Experience lightning-fast development
             </motion.p>
-
             {/* Expanding Ring Effect */}
             <motion.div
               initial={{ scale: 0, opacity: 0 }}
@@ -550,7 +653,32 @@ export default function ProcessSteps() {
                 marginLeft: '-50px',
                 marginTop: '-50px',
               }}
-            />
+            />{' '}
+          </motion.div>
+        )}
+      </AnimatePresence>{' '}
+      {/* Subtle Scroll Status */}
+      <AnimatePresence>
+        {scrollLocked && isFirstView && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ delay: 2 }}
+            className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-[60]"
+          >
+            <div className="bg-black/30 backdrop-blur-sm rounded-full px-3 py-1.5 border border-[#b0ff00]/10">
+              <div className="flex items-center space-x-2">
+                <motion.div
+                  animate={{ scale: [1, 1.1, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className="w-1.5 h-1.5 bg-[#b0ff00] rounded-full"
+                />
+                <span className="text-xs text-white/60">
+                  Scroll will resume automatically
+                </span>
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
