@@ -12,6 +12,7 @@ export interface BackgroundAnimationProps {
   opacity?: number;
 }
 
+// Wrap component with dynamic import to avoid SSR issues
 export default function BackgroundAnimation({
   animationData = gradientBg,
   withBlur = false,
@@ -23,9 +24,13 @@ export default function BackgroundAnimation({
   const lottieRef = useRef<LottieRefCurrentProps>(null);
   const resizeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Only run effect on client-side
   useEffect(() => {
     // Ensure this code only runs on the client
     setMounted(true);
+
+    // Skip the rest of the effect during SSR
+    if (typeof window === 'undefined') return;
 
     const handleResize = () => {
       // Debounce resize events to prevent flickering

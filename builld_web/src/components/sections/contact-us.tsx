@@ -8,9 +8,23 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 
-import PhoneInput from 'react-phone-input-2';
-import 'react-phone-input-2/lib/style.css';
+import dynamic from 'next/dynamic';
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
+
+// Dynamically import PhoneInput to prevent SSR issues
+const PhoneInput = dynamic(() => import('react-phone-input-2'), {
+  ssr: false,
+  loading: () => (
+    <input
+      type="tel"
+      placeholder="Loading phone input..."
+      style={{ height: '50px' }}
+      className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-zinc-700/50 border border-zinc-600 rounded-lg text-white"
+      disabled
+    />
+  ),
+});
+import 'react-phone-input-2/lib/style.css';
 
 import { useContactForm } from '@/hooks/useContactForm';
 import { useToast } from '@/components/ui/toast';
@@ -287,62 +301,51 @@ export default function ContactUs() {
                   >
                     Phone Number
                   </label>
-                  {isMounted ? (
-                    <PhoneInput
-                      country="us"
-                      enableSearch={true}
-                      value={phoneValue}
-                      onChange={(value: string) => {
-                        setPhoneValue(value);
-                        setValue('phoneNumber', value, {
-                          shouldValidate: true,
-                        });
-                      }}
-                      containerStyle={{
-                        width: '100%',
-                      }}
-                      inputStyle={{
-                        width: '100%',
-                        height: '50px',
-                        background: '#3f3f46',
-                        color: 'white',
-                        border: '1px solid #6b7280',
-                        borderRadius: '0.5rem',
-                        paddingLeft: '3rem',
-                        outline: 'none',
-                        fontSize: '0.875rem',
-                      }}
-                      buttonStyle={{
-                        background: '#3f3f46',
-                        color: 'white',
-                        border: '1px solid #6b7280',
-                        borderRadius: '0.5rem 0 0 0.5rem',
-                        outline: 'none',
-                      }}
-                      dropdownStyle={{
-                        background: '#374151',
-                        color: 'white',
-                        border: '1px solid #6b7280',
-                        zIndex: 9999,
-                      }}
-                      searchStyle={{
-                        background: '#374151',
-                        color: 'white',
-                        borderRadius: '0.25rem',
-                        border: '1px solid #6b7280',
-                      }}
-                    />
-                  ) : (
-                    <input
-                      type="tel"
-                      placeholder="Loading phone input..."
-                      className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-zinc-700/50
-                                 border border-zinc-600 rounded-lg text-white
-                                 focus:outline-none focus:ring-2 focus:ring-[#b0ff00]"
-                      style={{ height: '50px' }}
-                      disabled
-                    />
-                  )}
+                  {/* PhoneInput is already dynamically imported with no SSR */}
+                  <PhoneInput
+                    country="us"
+                    enableSearch={true}
+                    value={phoneValue}
+                    onChange={(value: string) => {
+                      setPhoneValue(value);
+                      setValue('phoneNumber', value, {
+                        shouldValidate: true,
+                      });
+                    }}
+                    containerStyle={{
+                      width: '100%',
+                    }}
+                    inputStyle={{
+                      width: '100%',
+                      height: '50px',
+                      background: '#3f3f46',
+                      color: 'white',
+                      border: '1px solid #6b7280',
+                      borderRadius: '0.5rem',
+                      paddingLeft: '3rem',
+                      outline: 'none',
+                      fontSize: '0.875rem',
+                    }}
+                    buttonStyle={{
+                      background: '#3f3f46',
+                      color: 'white',
+                      border: '1px solid #6b7280',
+                      borderRadius: '0.5rem 0 0 0.5rem',
+                      outline: 'none',
+                    }}
+                    dropdownStyle={{
+                      background: '#374151',
+                      color: 'white',
+                      border: '1px solid #6b7280',
+                      zIndex: 9999,
+                    }}
+                    searchStyle={{
+                      background: '#374151',
+                      color: 'white',
+                      borderRadius: '0.25rem',
+                      border: '1px solid #6b7280',
+                    }}
+                  />
                   {errors.phoneNumber && (
                     <p className="text-red-500 text-xs mt-1">
                       {errors.phoneNumber.message}

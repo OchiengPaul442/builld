@@ -1,7 +1,8 @@
+'use client';
 import Link from 'next/link';
-import BackgroundAnimation from '@/components/ui/background-animation';
 import Image from 'next/image';
 import Button from '@/components/ui/button';
+import BackgroundAnimation from '@/components/ui/background-animation';
 
 export default function NotFound() {
   return (
