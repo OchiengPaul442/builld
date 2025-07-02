@@ -59,6 +59,8 @@ export const ScrollProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const scrollToSection = useCallback((section: SectionType) => {
+    if (typeof window === 'undefined' || typeof document === 'undefined')
+      return;
     if (isScrolling.current) return;
     isScrolling.current = true;
     manualSectionUpdateRef.current = true;
@@ -88,6 +90,8 @@ export const ScrollProvider = ({ children }: { children: React.ReactNode }) => {
     [] // Remove activeSection dependency to prevent infinite loops
   );
   const throttledUpdateProcessCardStep = useCallback(() => {
+    if (typeof window === 'undefined' || typeof document === 'undefined')
+      return;
     const processSection = document.getElementById('section-process');
     if (processSection) {
       const { top, height } = processSection.getBoundingClientRect();
@@ -101,6 +105,8 @@ export const ScrollProvider = ({ children }: { children: React.ReactNode }) => {
   }, []); // Remove activeSection dependency
   useEffect(() => {
     const handleScroll = () => {
+      if (typeof window === 'undefined' || typeof document === 'undefined')
+        return;
       if (isScrolling.current || manualSectionUpdateRef.current) return;
 
       const sections: SectionType[] = [
