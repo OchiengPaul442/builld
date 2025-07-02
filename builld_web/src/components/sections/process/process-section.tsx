@@ -42,7 +42,7 @@ export default function ProcessSection() {
       <section
         ref={mainSectionRef}
         id="section-process"
-        className="relative section-fullscreen z-30 snap-section min-h-screen w-full flex items-center will-change-transform"
+        className="relative section-fullscreen z-30 snap-section min-h-[100svh] w-full flex flex-col md:flex-row items-center will-change-transform px-2 xs:px-3 sm:px-4 md:px-0"
       >
         <motion.div
           className="absolute inset-0 w-full h-full pointer-events-none"
@@ -65,7 +65,7 @@ export default function ProcessSection() {
       <section
         ref={stepsRef}
         id="section-process-steps"
-        className="relative z-30 section-fullscreen snap-section min-h-screen w-full flex items-center justify-center will-change-transform"
+        className="relative z-30 section-fullscreen snap-section min-h-[100svh] w-full flex items-center justify-center will-change-transform px-2 xs:px-3 sm:px-4 md:px-0"
       >
         <motion.div
           className="absolute inset-0 w-full h-full pointer-events-none"

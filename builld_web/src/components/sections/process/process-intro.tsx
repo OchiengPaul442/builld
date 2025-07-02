@@ -64,9 +64,9 @@ export default function ProcessIntro() {
   return (
     <div
       ref={ref}
-      className="max-w-7xl w-full mx-auto px-4 sm:px-6 md:px-0  py-8 sm:py-12 md:py-16 relative z-10"
+      className="max-w-7xl w-full mx-auto px-2 xs:px-3 sm:px-4 md:px-0 py-6 xs:py-8 sm:py-12 md:py-16 relative z-10"
     >
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 md:gap-12 lg:gap-16 items-center">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 xs:gap-6 sm:gap-8 md:gap-12 lg:gap-16 items-center">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={
@@ -76,11 +76,11 @@ export default function ProcessIntro() {
           className="md:col-span-4 flex justify-center md:justify-start"
         >
           <div
-            className={`${logoSize.containerSize} flex items-center justify-center ${logoSize.roundedSize} transform -rotate-90`}
+            className={`${logoSize.containerSize} flex items-center justify-center ${logoSize.roundedSize} transform -rotate-90 bg-white/5 backdrop-blur-2xl`}
             style={{
-              padding: '40px',
+              padding: '24px',
               backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              backdropFilter: 'blur(200px)',
+              backdropFilter: 'blur(120px)',
             }}
           >
             <div className="flex items-center justify-center w-full h-full">
@@ -103,18 +103,18 @@ export default function ProcessIntro() {
           className="md:col-span-8 flex flex-col"
         >
           <motion.div
-            className="flex items-center mb-8 sm:mb-12 md:mb-16"
+            className="flex items-center mb-4 xs:mb-6 sm:mb-8 md:mb-12"
             variants={fadeUpVariant}
             custom={0}
           >
-            <div className="w-6 sm:w-8 h-px bg-white/70 mr-2"></div>
-            <span className="text-xs sm:text-sm text-white/70">
+            <div className="w-5 xs:w-6 sm:w-8 h-px bg-white/70 mr-2"></div>
+            <span className="text-xs xs:text-sm sm:text-base text-white/70">
               Our Process
             </span>
           </motion.div>
 
           <motion.h2
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-normal mb-4 sm:mb-6 md:mb-8 text-white leading-tight tracking-tight"
+            className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-normal mb-2 xs:mb-4 sm:mb-6 md:mb-8 text-white leading-tight tracking-tight"
             variants={fadeUpVariant}
             custom={0.1}
           >
@@ -123,7 +123,7 @@ export default function ProcessIntro() {
           </motion.h2>
 
           <motion.p
-            className="text-sm sm:text-base md:text-lg font-light max-w-2xl text-gray-200 opacity-90 leading-relaxed"
+            className="text-xs xs:text-sm sm:text-base md:text-lg font-light max-w-2xl text-gray-200 opacity-90 leading-relaxed"
             variants={fadeUpVariant}
             custom={0.2}
           >

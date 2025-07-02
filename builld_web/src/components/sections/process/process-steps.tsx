@@ -215,11 +215,21 @@ export default function ProcessSteps() {
     return DESKTOP;
   }, [windowWidth]);
 
+  // Responsive card sizing using Tailwind breakpoints and fluid values
   const cardSizing = useMemo(() => {
-    const { DESKTOP, TABLET, MOBILE } = CARD_CONFIG.CARD_SIZES;
-    if (windowWidth < 768) return MOBILE;
-    if (windowWidth < 1024) return TABLET;
-    return DESKTOP;
+    if (windowWidth < 400) {
+      return { width: '90vw', height: '60vw', padding: '20px 10px' };
+    }
+    if (windowWidth < 640) {
+      return { width: '95vw', height: '70vw', padding: '28px 12px' };
+    }
+    if (windowWidth < 768) {
+      return { width: '340px', height: '260px', padding: '32px 16px' };
+    }
+    if (windowWidth < 1024) {
+      return { width: '360px', height: '350px', padding: '60px 36px' };
+    }
+    return { width: '432px', height: '423px', padding: '91px 48px' };
   }, [windowWidth]);
   const cardStyles = useMemo(() => {
     // Fixed background color with no transparency
@@ -427,7 +437,7 @@ export default function ProcessSteps() {
         )}
       </div>
       {/* Card Container */}
-      <div className="h-dvh flex items-center justify-center max-w-7xl w-full mx-auto">
+      <div className="h-[100svh] min-h-[100svh] flex items-center justify-center max-w-7xl w-full mx-auto">
         <div
           className="relative"
           style={{ width: cardSizing.width, height: cardSizing.height }}
@@ -438,7 +448,7 @@ export default function ProcessSteps() {
             return (
               <motion.div
                 key={card.id}
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer"
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer select-none touch-manipulation"
                 style={{
                   width: cardSizing.width,
                   height: cardSizing.height,
@@ -471,7 +481,7 @@ export default function ProcessSteps() {
               >
                 {' '}
                 <div
-                  className="w-full h-full flex flex-col justify-center items-center text-center rounded-[40px]"
+                  className="w-full h-full flex flex-col justify-center items-center text-center rounded-2xl sm:rounded-3xl md:rounded-[40px] bg-[#333434] border border-white/10 shadow-lg"
                   style={{
                     padding: cardSizing.padding,
                     backgroundColor: cardStyles.cardBackgroundColor,
@@ -480,7 +490,7 @@ export default function ProcessSteps() {
                   }}
                 >
                   <motion.h3
-                    className="text-xl sm:text-2xl md:text-3xl font-normal mb-4 md:mb-6"
+                    className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-semibold mb-2 sm:mb-4 md:mb-6 text-accent-green"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2, duration: 0.5 }}
@@ -488,7 +498,7 @@ export default function ProcessSteps() {
                     {card.title}
                   </motion.h3>
                   <motion.p
-                    className="text-sm sm:text-base md:text-lg font-light text-white/80"
+                    className="text-xs xs:text-sm sm:text-base md:text-lg font-light text-white/80"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4, duration: 0.5 }}
