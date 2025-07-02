@@ -56,78 +56,15 @@ export default function ProcessSteps() {
   const [showFinalMessage, setShowFinalMessage] = useState(false);
   // New states for enhanced user experience
   const [isFirstView, setIsFirstView] = useState(true);
-  const [scrollLocked, setScrollLocked] = useState(false);
   const [userInteracted, setUserInteracted] = useState(false);
   // Intersection observer for section visibility
   const [ref, inView] = useInView({
     threshold: 0.3, // Increased threshold for better timing
     triggerOnce: false,
   });
-  // Scroll lock functionality
-  useEffect(() => {
-    if (scrollLocked) {
-      // Get current scroll position to maintain it
-      const scrollY = window.scrollY;
+  // Scroll lock functionality - REMOVED
 
-      // Prevent scrolling on multiple levels
-      document.body.style.overflow = 'hidden';
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.width = '100%';
-
-      // Prevent wheel events
-      const preventScroll = (e: WheelEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-      };
-
-      // Prevent keyboard scrolling
-      const preventKeyScroll = (e: KeyboardEvent) => {
-        if (
-          [
-            'ArrowUp',
-            'ArrowDown',
-            'PageUp',
-            'PageDown',
-            'Home',
-            'End',
-            ' ',
-          ].includes(e.key)
-        ) {
-          e.preventDefault();
-        }
-      };
-
-      // Prevent touch scrolling
-      const preventTouchScroll = (e: TouchEvent) => {
-        if (e.touches.length > 1) return;
-        e.preventDefault();
-      };
-
-      document.addEventListener('wheel', preventScroll, { passive: false });
-      document.addEventListener('keydown', preventKeyScroll);
-      document.addEventListener('touchmove', preventTouchScroll, {
-        passive: false,
-      });
-
-      return () => {
-        document.removeEventListener('wheel', preventScroll);
-        document.removeEventListener('keydown', preventKeyScroll);
-        document.removeEventListener('touchmove', preventTouchScroll);
-      };
-    } else {
-      // Re-enable scrolling and restore position
-      const scrollY = document.body.style.top;
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-
-      if (scrollY) {
-        window.scrollTo(0, parseInt(scrollY || '0') * -1);
-      }
-    }
-  }, [scrollLocked]); // Handle mounting and window resize - single effect to prevent conflicts
+  // Handle mounting and window resize - single effect to prevent conflicts
   useEffect(() => {
     setIsMounted(true);
 
@@ -146,11 +83,15 @@ export default function ProcessSteps() {
       setActiveIndex(1);
       setAnimationPhase('intro');
       setShowFinalMessage(false);
-      setScrollLocked(false);
-    } else if (isFirstView) {
-      // First time viewing - lock scroll and show experience
-      setScrollLocked(true);
-
+      setIsFirstView(true); // Reset autoplay state so it restarts on re-entry
+      setUserInteracted(false); // Reset user interaction state
+    } else {
+      // Always restart autoplay when section comes into view
+      setActiveIndex(1);
+      setAnimationPhase('intro');
+      setShowFinalMessage(false);
+      setIsFirstView(true);
+      setUserInteracted(false);
       // Start animation after brief delay
       const timer = setTimeout(() => {
         setAnimationPhase('cards');
@@ -159,12 +100,6 @@ export default function ProcessSteps() {
       return () => {
         clearTimeout(timer);
       };
-    } else {
-      // Subsequent views - normal behavior
-      const timer = setTimeout(() => {
-        setAnimationPhase('cards');
-      }, 500);
-      return () => clearTimeout(timer);
     }
   }, [inView, isMounted, isFirstView]);
   // Auto-progress through cards
@@ -178,12 +113,9 @@ export default function ProcessSteps() {
         } else {
           // Move to finale after last card
           setAnimationPhase('finale');
-          setShowFinalMessage(true); // Unlock scroll after animation completes (first time only)
+          setShowFinalMessage(true); // Show final message
           if (isFirstView) {
-            setTimeout(() => {
-              setScrollLocked(false);
-              setIsFirstView(false);
-            }, 1500); // Reduced from 2000ms
+            setIsFirstView(false);
           }
 
           return prev;
@@ -198,13 +130,12 @@ export default function ProcessSteps() {
   const handleCardClick = useCallback(
     (index: number) => {
       setUserInteracted(true);
-      setActiveIndex(index + 1); // If user interacts, unlock scroll immediately
-      if (isFirstView && scrollLocked) {
-        setScrollLocked(false);
+      setActiveIndex(index + 1);
+      if (isFirstView) {
         setIsFirstView(false);
       }
     },
-    [isFirstView, scrollLocked]
+    [isFirstView]
   );
 
   // Memoized calculations - stable order and dependencies
@@ -372,7 +303,7 @@ export default function ProcessSteps() {
       suppressHydrationWarning
     >
       {/* Step Indicator with Progress */}
-      <div className="absolute left-4 md:left-0 top-32 sm:top-48 md:top-64 z-50">
+      <div className="absolute left-1/2 -translate-x-1/2 top-24 sm:top-32 md:left-0 md:translate-x-0 md:top-64 z-50">
         <AnimatePresence mode="wait">
           {activeIndex > 0 && activeIndex <= 3 && (
             <motion.div
@@ -666,31 +597,6 @@ export default function ProcessSteps() {
           </motion.div>
         )}
       </AnimatePresence>{' '}
-      {/* Subtle Scroll Status */}
-      <AnimatePresence>
-        {scrollLocked && isFirstView && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            transition={{ delay: 2 }}
-            className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-[60]"
-          >
-            <div className="bg-black/30 backdrop-blur-sm rounded-full px-3 py-1.5 border border-[#b0ff00]/10">
-              <div className="flex items-center space-x-2">
-                <motion.div
-                  animate={{ scale: [1, 1.1, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="w-1.5 h-1.5 bg-[#b0ff00] rounded-full"
-                />
-                <span className="text-xs text-white/60">
-                  Scroll will resume automatically
-                </span>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </motion.div>
   );
 }
