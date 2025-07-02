@@ -87,6 +87,7 @@ export default function BackgroundAnimation({
   }, []); // Empty dependency array to run only once
 
   if (!mounted) return null;
+
   return (
     <>
       <motion.div
@@ -101,24 +102,27 @@ export default function BackgroundAnimation({
           backfaceVisibility: 'hidden', // Prevent flickering
         }}
       >
-        <Lottie
-          lottieRef={lottieRef}
-          animationData={animationData}
-          autoplay={!isMobile}
-          loop={!isMobile}
-          style={{
-            width: '100%',
-            height: '100%',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            transform: 'translate3d(0, 0, 0)',
-            backfaceVisibility: 'hidden',
-          }}
-          rendererSettings={{
-            preserveAspectRatio: 'xMidYMid slice',
-          }}
-        />
+        {/* Only render Lottie when mounted and window is available */}
+        {mounted && typeof window !== 'undefined' && (
+          <Lottie
+            lottieRef={lottieRef}
+            animationData={animationData}
+            autoplay={!isMobile}
+            loop={!isMobile}
+            style={{
+              width: '100%',
+              height: '100%',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              transform: 'translate3d(0, 0, 0)',
+              backfaceVisibility: 'hidden',
+            }}
+            rendererSettings={{
+              preserveAspectRatio: 'xMidYMid slice',
+            }}
+          />
+        )}
       </motion.div>
 
       <div

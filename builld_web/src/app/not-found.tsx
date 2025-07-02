@@ -2,13 +2,31 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import Button from '@/components/ui/button';
-import BackgroundAnimation from '@/components/ui/background-animation';
+import dynamic from 'next/dynamic';
+import { useState, useEffect } from 'react';
+
+// Dynamic import with no SSR to prevent document access issues
+const BackgroundAnimation = dynamic(
+  () => import('@/components/ui/background-animation'),
+  {
+    ssr: false,
+    loading: () => null,
+  }
+);
 
 export default function NotFound() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <div className="relative min-h-screen w-full flex flex-col items-center justify-center gradient-bg overflow-hidden">
-      {/* Animated background */}
-      <BackgroundAnimation opacity={0.7} withBlur blurStrength={80} />
+      {/* Animated background - only render after mounting */}
+      {mounted && (
+        <BackgroundAnimation opacity={0.7} withBlur blurStrength={80} />
+      )}
       <div className="absolute top-8 left-0 w-full flex justify-center z-10">
         <Image src="/images/logo.svg" alt="Logo" width={100} height={100} />
       </div>
