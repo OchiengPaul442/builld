@@ -36,6 +36,8 @@ export default function Header({ hideHeader }: HeaderProps) {
 
   // Close mobile menu if clicking outside.
   useEffect(() => {
+    if (typeof window === 'undefined' || typeof document === 'undefined')
+      return;
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (
