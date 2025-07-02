@@ -218,16 +218,16 @@ export default function ProcessSteps() {
   // Responsive card sizing using Tailwind breakpoints and fluid values
   const cardSizing = useMemo(() => {
     if (windowWidth < 400) {
-      return { width: '90vw', height: '60vw', padding: '20px 10px' };
+      return { width: '96vw', height: '62vw', padding: '16px 6px' };
     }
     if (windowWidth < 640) {
-      return { width: '95vw', height: '70vw', padding: '28px 12px' };
+      return { width: '98vw', height: '75vw', padding: '20px 8px' };
     }
     if (windowWidth < 768) {
-      return { width: '340px', height: '260px', padding: '32px 16px' };
+      return { width: '350px', height: '270px', padding: '28px 12px' };
     }
     if (windowWidth < 1024) {
-      return { width: '360px', height: '350px', padding: '60px 36px' };
+      return { width: '380px', height: '360px', padding: '48px 20px' };
     }
     return { width: '432px', height: '423px', padding: '91px 48px' };
   }, [windowWidth]);
@@ -437,9 +437,9 @@ export default function ProcessSteps() {
         )}
       </div>
       {/* Card Container */}
-      <div className="h-[100svh] min-h-[100svh] flex items-center justify-center max-w-7xl w-full mx-auto">
+      <div className="h-[100svh] min-h-[100svh] flex items-center justify-center max-w-7xl w-full mx-auto px-0 sm:px-2 md:px-4 overflow-x-hidden">
         <div
-          className="relative"
+          className="relative max-w-full min-w-0"
           style={{ width: cardSizing.width, height: cardSizing.height }}
         >
           {' '}
@@ -448,12 +448,15 @@ export default function ProcessSteps() {
             return (
               <motion.div
                 key={card.id}
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer select-none touch-manipulation"
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer select-none touch-manipulation max-w-full min-w-0"
                 style={{
                   width: cardSizing.width,
                   height: cardSizing.height,
                   zIndex: styles.zIndex,
                   transformOrigin: 'center center',
+                  maxWidth: '100vw',
+                  minWidth: 0,
+                  WebkitTapHighlightColor: 'transparent',
                 }}
                 initial={{
                   x: 0,
@@ -481,16 +484,18 @@ export default function ProcessSteps() {
               >
                 {' '}
                 <div
-                  className="w-full h-full flex flex-col justify-center items-center text-center rounded-2xl sm:rounded-3xl md:rounded-[40px] bg-[#333434] border border-white/10 shadow-lg"
+                  className="w-full h-full flex flex-col justify-center items-center text-center rounded-xl xs:rounded-2xl sm:rounded-3xl md:rounded-[40px] bg-[#333434] border border-white/10 shadow-lg max-w-full min-w-0"
                   style={{
                     padding: cardSizing.padding,
                     backgroundColor: cardStyles.cardBackgroundColor,
                     border: cardStyles.cardBorder,
                     boxShadow: cardStyles.cardBoxShadow,
+                    maxWidth: '100vw',
+                    minWidth: 0,
                   }}
                 >
                   <motion.h3
-                    className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-semibold mb-2 sm:mb-4 md:mb-6 text-accent-green"
+                    className="text-base xs:text-lg sm:text-xl md:text-2xl font-semibold mb-2 sm:mb-4 md:mb-6 text-accent-green break-words"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2, duration: 0.5 }}
@@ -498,7 +503,7 @@ export default function ProcessSteps() {
                     {card.title}
                   </motion.h3>
                   <motion.p
-                    className="text-xs xs:text-sm sm:text-base md:text-lg font-light text-white/80"
+                    className="text-xs xs:text-sm sm:text-base md:text-lg font-light text-white/80 break-words"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4, duration: 0.5 }}
