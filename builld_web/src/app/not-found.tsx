@@ -1,4 +1,3 @@
-import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import BackgroundAnimation from '@/components/ui/background-animation';
 import Image from 'next/image';
