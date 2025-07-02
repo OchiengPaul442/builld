@@ -79,7 +79,7 @@ export default function ContactUs() {
 
   // State for phone input to prevent hydration issues
   const [phoneValue, setPhoneValue] = useState('');
-  const [isMounted, setIsMounted] = useState(false);
+  // Removed unused isMounted state
 
   // Use the contact form hook
   const {
@@ -108,10 +108,7 @@ export default function ContactUs() {
     resolver: yupResolver(validationSchema),
   });
 
-  // Handle mounting for hydration
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  // ...existing code...
 
   // Cleanup timeouts
   useEffect(() => {
