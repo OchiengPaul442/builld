@@ -533,7 +533,7 @@ export default function ProcessSteps() {
               opacity: { duration: 0.8 },
               scale: { duration: 1, delay: 0.2 },
             }}
-            className="absolute bottom-2 sm:bottom-4 md:bottom-6 z-50 flex flex-col items-center"
+            className="absolute bottom-20 xs:bottom-24 sm:bottom-10 md:bottom-6 z-50 flex flex-col items-center"
           >
             {/* Animated Background Glow */}
             <motion.div
